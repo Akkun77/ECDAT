@@ -1,0 +1,96 @@
+# ────────────────────────────────────────────────────────
+# ECDAT — Root .gitignore
+# ────────────────────────────────────────────────────────
+
+# ── Runtime data & databases ──
+.ecdat/
+*.sqlite3
+*.sqlite3-journal
+*.sqlite3-wal
+*.sqlite3-shm
+*.db
+
+# ── Python ──
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+*.egg
+dist/
+build/
+*.whl
+.venv/
+venv/
+env/
+.eggs/
+
+# ── Pytest / coverage ──
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# ── Node / Next.js ──
+node_modules/
+.next/
+out/
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+coverage/
+
+# ── Environment & secrets ──
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# ── Uploaded files & temporary scan data ──
+uploads/
+tmp/
+temp/
+*.zip
+
+# ── Logs ──
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ── OS generated ──
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ── IDE / Editor ──
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+
+# ── Vercel ──
+.vercel
+
+# ── TypeScript build info ──
+*.tsbuildinfo
+next-env.d.ts
+
+# ── Miscellaneous ──
+*.bak
+*.orig

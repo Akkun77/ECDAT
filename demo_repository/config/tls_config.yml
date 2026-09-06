@@ -1,0 +1,24 @@
+# Server TLS Configuration
+# WARNING: Contains deprecated protocol versions for testing
+
+server:
+  tls:
+    enabled: true
+    min_version: TLSv1.0
+    max_version: TLSv1.2
+    protocols:
+      - SSLv3
+      - TLSv1.0
+      - TLSv1.1
+      - TLSv1.2
+    cipher_suites:
+      - TLS_RSA_WITH_AES_128_CBC_SHA
+      - TLS_RSA_WITH_3DES_EDE_CBC_SHA
+      - TLS_RSA_WITH_AES_256_GCM_SHA384
+    certificate: /etc/ssl/certs/server.crt
+    private_key: /etc/ssl/private/server.key
+
+# Database connection
+database:
+  ssl_mode: prefer
+  ssl_min_protocol_version: TLSv1.0

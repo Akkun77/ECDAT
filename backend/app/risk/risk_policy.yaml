@@ -1,0 +1,254 @@
+# ECDAT Risk Policy
+# Based on NIST SP 800-131A, CNSA 2.0, and industry best practices
+# All claims are defensible and avoid overstatement
+
+policy_metadata:
+  name: "ECDAT Default Risk Policy"
+  version: "1.0.0"
+  source: "ECDAT risk policy based on NIST SP 800-131A and CNSA 2.0 guidance"
+  last_updated: "2026-09-05"
+
+# Mosca defaults (clearly marked as demo assumptions)
+mosca_defaults:
+  threat_horizon_years: 15
+  is_demo_assumption: true
+
+algorithms:
+  md5:
+    current_security: broken
+    quantum_risk: not_applicable
+    severity: critical
+    reason: "MD5 has known collision vulnerabilities and should not be used for any security-sensitive purpose."
+    recommendation: "Migrate to SHA-256 or SHA-3 for integrity checks. For password hashing, use bcrypt, scrypt, or Argon2."
+    migration_priority: immediate
+    explanation: "MD5 produces 128-bit digests but has been practically broken since 2004. Collision attacks can be performed in seconds on commodity hardware. MD5 should not be used for digital signatures, certificate validation, or any context where collision resistance is required."
+
+  sha1:
+    current_security: deprecated
+    quantum_risk: not_applicable
+    severity: high
+    reason: "SHA-1 has demonstrated practical collision vulnerabilities (SHAttered, 2017) and is deprecated for security use."
+    recommendation: "Migrate to SHA-256 or SHA-3."
+    migration_priority: high
+    explanation: "SHA-1 was widely used but practical collision attacks have been demonstrated. While preimage resistance remains, SHA-1 should not be used where collision resistance is required."
+
+  sha224:
+    current_security: acceptable
+    quantum_risk: low_concern
+    severity: low
+    reason: "SHA-224 is an approved algorithm but provides less security margin than SHA-256."
+    recommendation: "Consider using SHA-256 for consistency and stronger security margin."
+    migration_priority: low
+
+  sha256:
+    current_security: acceptable
+    quantum_risk: low_concern
+    severity: informational
+    reason: "SHA-256 is an approved hash algorithm with no known practical vulnerabilities."
+    recommendation: "No action required."
+    migration_priority: none
+    explanation: "SHA-256 is widely approved and recommended. Quantum preimage search and collision search have different models; this is not a blanket guarantee for every use, and raw SHA-256 is unsuitable for password storage."
+
+  sha512:
+    current_security: strong
+    quantum_risk: low_concern
+    severity: informational
+    reason: "SHA-512 is an approved hash algorithm providing strong security margin."
+    recommendation: "No action required."
+    migration_priority: none
+
+  rsa:
+    key_size_rules:
+      - max_key_size: 2047
+        current_security: deprecated
+        quantum_risk: vulnerable
+        severity: critical
+        reason: "RSA keys below 2048 bits provide security strength below modern recommended levels and should no longer be used for new systems."
+        migration_priority: immediate
+        explanation: "RSA-1024 offers approximately 80 bits of classical security, which falls below the 112-bit minimum recommended by NIST. Additionally, RSA of any size is theoretically vulnerable to quantum attack via Shor's algorithm."
+        mosca_defaults:
+          data_lifetime_years: 5
+          migration_time_years: 2
+        recommendations_by_operation:
+          key_generation: "Replace legacy RSA-1024 immediately with an approved modern configuration while planning migration toward suitable post-quantum cryptography."
+          asymmetric_encryption: "Replace RSA-1024 encryption immediately. Plan migration toward ML-KEM or an appropriate hybrid key establishment scheme. Migration may require protocol and application changes."
+          key_exchange: "Replace RSA-1024 key exchange immediately. Plan migration toward ML-KEM or an appropriate hybrid key establishment scheme. Migration may require protocol and application changes."
+          signature: "Replace RSA-1024 signatures immediately. Plan migration toward ML-DSA or another approved post-quantum signature approach. Migration may require protocol and application changes."
+          default: "Replace legacy RSA-1024 immediately with an approved modern configuration while planning migration toward suitable post-quantum cryptography."
+
+      - max_key_size: 3071
+        current_security: acceptable
+        quantum_risk: vulnerable
+        severity: high
+        reason: "RSA-2048 meets current minimum recommended key sizes but remains theoretically vulnerable to cryptanalysis by a cryptographically relevant quantum computer running Shor's algorithm."
+        migration_priority: planned
+        explanation: "RSA-2048 provides approximately 112 bits of classical security, meeting current NIST minimums. However, a sufficiently large quantum computer could factor RSA-2048 using Shor's algorithm. Organizations should begin planning migration."
+        mosca_defaults:
+          data_lifetime_years: 7
+          migration_time_years: 3
+        recommendations_by_operation:
+          key_exchange: "Plan migration toward ML-KEM or an appropriate hybrid key establishment scheme. Migration may require protocol and application changes and is not necessarily a drop-in replacement."
+          asymmetric_encryption: "Plan migration toward ML-KEM or an appropriate hybrid key establishment scheme. Migration may require protocol and application changes."
+          signature: "Plan migration toward ML-DSA or another approved post-quantum signature approach. Migration may require protocol and application changes."
+          default: "Plan migration toward appropriate post-quantum alternatives. Migration may require protocol and application changes."
+
+      - max_key_size: 4096
+        current_security: acceptable
+        quantum_risk: vulnerable
+        severity: medium
+        reason: "RSA-3072+ provides strong classical security but remains theoretically vulnerable to quantum attack via Shor's algorithm."
+        migration_priority: planned
+        mosca_defaults:
+          data_lifetime_years: 10
+          migration_time_years: 3
+        recommendations_by_operation:
+          key_exchange: "Plan migration toward ML-KEM. Migration may require protocol and application changes."
+          signature: "Plan migration toward ML-DSA. Migration may require protocol and application changes."
+          default: "Plan migration toward appropriate post-quantum alternatives."
+
+  ecdsa:
+    current_security: acceptable
+    quantum_risk: vulnerable
+    severity: high
+    reason: "ECDSA is acceptable for current use but is theoretically vulnerable to quantum attack via Shor's algorithm."
+    migration_priority: planned
+    explanation: "Elliptic curve cryptography relies on the discrete logarithm problem, which Shor's algorithm can solve efficiently on a quantum computer."
+    mosca_defaults:
+      data_lifetime_years: 7
+      migration_time_years: 3
+    recommendations_by_operation:
+      signature: "Plan migration toward ML-DSA or another approved post-quantum signature approach. Migration may require protocol and application changes."
+      key_exchange: "Plan migration toward ML-KEM or an appropriate hybrid key establishment scheme."
+      default: "Plan migration toward appropriate post-quantum alternatives. Migration may require protocol and application changes."
+
+  ecc:
+    current_security: acceptable
+    quantum_risk: vulnerable
+    severity: high
+    reason: "ECC is acceptable for current use but is theoretically vulnerable to quantum attack."
+    migration_priority: planned
+    mosca_defaults:
+      data_lifetime_years: 7
+      migration_time_years: 3
+    recommendations_by_operation:
+      key_exchange: "Plan migration toward ML-KEM or an appropriate hybrid key establishment scheme."
+      signature: "Plan migration toward ML-DSA or another approved post-quantum signature approach."
+      default: "Plan migration toward appropriate post-quantum alternatives."
+
+  des:
+    current_security: broken
+    quantum_risk: not_applicable
+    severity: critical
+    reason: "DES uses a 56-bit key which provides inadequate security against brute-force attacks."
+    recommendation: "Migrate to AES-256-GCM or ChaCha20-Poly1305."
+    migration_priority: immediate
+    explanation: "DES was designed for 1970s-era computing constraints. Its 56-bit key space can be exhaustively searched with modern hardware."
+
+  3des:
+    current_security: deprecated
+    quantum_risk: not_applicable
+    severity: high
+    reason: "Triple DES is deprecated due to its 64-bit block size, making it susceptible to birthday-bound attacks (Sweet32)."
+    recommendation: "Migrate to AES-256-GCM."
+    migration_priority: high
+    explanation: "Three-key 3DES has 168 key bits but at most about 112 bits of classical security; its 64-bit block size means collision attacks become practical after approximately 2^32 blocks of data."
+
+  blowfish:
+    current_security: deprecated
+    quantum_risk: not_applicable
+    severity: high
+    reason: "Blowfish uses a 64-bit block size, making it susceptible to birthday-bound attacks."
+    recommendation: "Migrate to AES-256-GCM or ChaCha20-Poly1305."
+    migration_priority: high
+
+  rc4:
+    current_security: broken
+    quantum_risk: not_applicable
+    severity: critical
+    reason: "RC4 has known statistical biases in its keystream that enable plaintext recovery attacks."
+    recommendation: "Migrate to AES-256-GCM or ChaCha20-Poly1305."
+    migration_priority: immediate
+    explanation: "RC4 was widely used in TLS and WEP/WPA but has been prohibited by RFC 7465 due to practical attacks."
+
+  ecb:
+    current_security: broken
+    quantum_risk: not_applicable
+    severity: critical
+    reason: "ECB mode does not provide semantic security. Identical plaintext blocks produce identical ciphertext blocks, leaking data patterns."
+    recommendation: "Use authenticated encryption modes such as GCM or ChaCha20-Poly1305."
+    migration_priority: immediate
+
+  aes:
+    key_size_rules:
+      - max_key_size: 128
+        current_security: acceptable
+        quantum_risk: low_concern
+        severity: informational
+        reason: "AES-128 remains an approved symmetric algorithm. Quantum search algorithms provide a theoretical speedup against brute-force search, but practical resource requirements remain substantial."
+        recommendation: "No urgent migration required. AES-256 may be preferred where additional long-term quantum security margin is desired."
+        migration_priority: low
+        explanation: "AES-128 is approved by NIST and remains secure against all known classical attacks. Grover's algorithm provides a theoretical quadratic speedup for brute-force key search, but building a quantum computer capable of exploiting this remains an enormous engineering challenge."
+      - max_key_size: 192
+        current_security: strong
+        quantum_risk: low_concern
+        severity: informational
+        reason: "AES-192 provides strong symmetric security with substantial quantum margin."
+        recommendation: "No urgent action required."
+        migration_priority: none
+      - max_key_size: 256
+        current_security: strong
+        quantum_risk: low_concern
+        severity: informational
+        reason: "AES-256 provides strong symmetric security with excellent quantum margin."
+        recommendation: "No urgent action required."
+        migration_priority: none
+        explanation: "AES-256 is considered the a strong symmetric primitive and provides ample security margin against classical attacks and quantum key search, assuming correct mode, nonce and key management."
+
+  insecure_random:
+    current_security: deprecated
+    quantum_risk: not_applicable
+    severity: medium
+    reason: "Non-cryptographic random number generators are predictable and must not be used for security-sensitive operations."
+    recommendation: "Use cryptographically secure alternatives: secrets (Python), crypto.randomBytes (Node.js), SecureRandom (Java)."
+    migration_priority: high
+
+  tls_1_0:
+    current_security: deprecated
+    quantum_risk: not_applicable
+    severity: high
+    reason: "TLS 1.0 is deprecated due to known vulnerabilities and obsolete protocol protections."
+    recommendation: "Upgrade to TLS 1.2 or TLS 1.3."
+    migration_priority: high
+
+  ssl_v3:
+    current_security: broken
+    quantum_risk: not_applicable
+    severity: critical
+    reason: "SSL 3.0 is broken and prohibited due to the POODLE attack."
+    recommendation: "Upgrade to TLS 1.2 or TLS 1.3."
+    migration_priority: immediate
+
+  tls_1_2:
+    current_security: acceptable
+    quantum_risk: low_concern
+    severity: informational
+    reason: "TLS 1.2 remains acceptable when configured with strong cipher suites."
+    recommendation: "Consider upgrading to TLS 1.3 where feasible."
+    migration_priority: low
+
+  hardcoded_secret:
+    current_security: deprecated
+    quantum_risk: not_applicable
+    severity: high
+    reason: "Hardcoded credentials or secrets in source code can be extracted through code review, version control history, or binary analysis."
+    recommendation: "Use environment variables, secrets managers, or secure vaults for credential storage."
+    migration_priority: high
+    explanation: "Storing secrets in source code is a security hygiene issue. Secrets should be managed through dedicated secret management solutions."
+
+  deprecated_cipher_api:
+    current_security: deprecated
+    quantum_risk: low_concern
+    severity: high
+    reason: "Deprecated Node createCipher uses obsolete password-based derivation and IV handling; AES key length does not make this API safe."
+    recommendation: "Replace createCipher with authenticated encryption using createCipheriv, securely derived keys and appropriate nonces."
+    migration_priority: high
