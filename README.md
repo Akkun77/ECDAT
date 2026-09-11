@@ -21,6 +21,48 @@ Organizations rely on cryptographic primitives — hash functions, ciphers, key 
 
 ---
 
+## Showcase Screenshots
+
+<div align="center">
+  <h3>1. Executive Dashboard & Real-Time Discovery Overview</h3>
+  <img src="docs/screenshots/01-overview.png" alt="ECDAT Executive Dashboard" width="100%" />
+  <p><em>Real metrics from live repository scan: 50 findings, 15 current criticals, 12 quantum migration concerns across 3 languages.</em></p>
+</div>
+
+<br/>
+
+<div align="center">
+  <h3>2. Cryptographic Findings & Quantum Risk Drilldown (RSA-2048)</h3>
+  <img src="docs/screenshots/02-rsa-finding.png" alt="RSA-2048 Finding Evidence" width="100%" />
+  <p><em>Dual-track risk separation: Acceptable classical status today vs. Vulnerable quantum status tomorrow with full source provenance.</em></p>
+</div>
+
+<br/>
+
+<div align="center">
+  <h3>3. Dual-Risk Concept in Action (MD5 Legacy Hash)</h3>
+  <img src="docs/screenshots/03-md5-finding.png" alt="MD5 Finding Evidence" width="100%" />
+  <p><em>MD5 clearly identified as Broken today classically, with Quantum Risk marked as Not Applicable.</em></p>
+</div>
+
+<br/>
+
+<div align="center">
+  <h3>4. Interactive Cryptographic Architecture Map</h3>
+  <img src="docs/screenshots/04-crypto-map.png" alt="Crypto Map Dependency Graph" width="100%" />
+  <p><em>React Flow visualization showing hierarchical mapping: Application → Directories → Files → Cryptographic Primitives.</em></p>
+</div>
+
+<br/>
+
+<div align="center">
+  <h3>5. Prioritized Migration Roadmap (Mosca's Theorem & PQC Standards)</h3>
+  <img src="docs/screenshots/05-migration-plan.png" alt="Migration Roadmap" width="100%" />
+  <p><em>Urgency tiers (Act Now, Plan Migration, Monitor) based on Mosca's inequality with direct NIST FIPS 203/204/205 recommendations.</em></p>
+</div>
+
+---
+
 ## Architecture
 
 ```mermaid
