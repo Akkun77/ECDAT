@@ -1,39 +1,40 @@
-# ECDAT — Hackathon Presentation & Judge Showcase Master Guide
+# ECDAT Demo & Evaluation Guide
 
-> **Project Name:** ECDAT (Enterprise Cryptographic Discovery & Analysis Tool)  
-> **Target Event:** Smart India Hackathon (SIH) 2026  
-> **Core Category:** Cyber Security / Post-Quantum Cryptography (PQC) / DevSecOps  
-
----
-
-## 1. Executive Summary: What is ECDAT in Simple Terms?
-
-Imagine a bank, telecom operator, or government agency with millions of lines of code accumulated over 15 years.
-Inside that code:
-- Some developers used **MD5** or **SHA-1** to hash passwords (broken today).
-- Some hardcoded database credentials or API tokens directly in source files (security hygiene violation).
-- Some used **RSA-2048** or **ECDSA** for digital signatures or encryption. While RSA-2048 is secure against today's standard laptops and supercomputers, **it will be broken when Cryptanalytically Relevant Quantum Computers (CRQCs) arrive via Shor's Algorithm**.
-- Organizations also face **Harvest Now, Decrypt Later (HNDL)**: adversaries intercept and store encrypted confidential communication *today*, waiting for quantum computers *tomorrow* to decrypt it.
-
-### The Problem
-Organizations **do not know what cryptography they are using, where it is located, or which systems need migration first**.
-
-### What ECDAT Does
-ECDAT is an automated static discovery and risk analysis tool. You point it at a repository (or upload a ZIP), and it:
-1. **Finds all cryptographic primitives** and hardcoded secrets across multiple languages.
-2. **Separates current-day risk from quantum risk** (a critical distinction).
-3. **Applies Mosca's Theorem** to calculate whether you need to migrate *now* or can afford to *monitor*.
-4. **Generates a Cryptographic Bill of Materials (CBOM)**—the cryptography equivalent of an SBOM.
-5. **Maps modern Post-Quantum Cryptography (PQC) alternatives** based on NIST FIPS standards (e.g., ML-KEM, ML-DSA).
-6. **Renders an interactive dependency graph** and enterprise dashboard.
+> **Project:** ECDAT (Enterprise Cryptographic Discovery & Analysis Tool)  
+> **Type:** Software Prototype & Technical Demonstration  
+> **Project Context:** Developed as a prototype for Smart India Hackathon 2026 (SIH26164 / NTRO)  
 
 ---
 
-## 2. Core Architecture & Why Judges Will Love It
+## 1. Project Overview
 
-### The 100% Deterministic Rule-Based Engine (NO LLM Hallucinations)
-A huge selling point for cybersecurity judges:
-> *"We do NOT use an LLM or generative AI to make security risk assessments or cryptographic classifications. All detections, risk levels, and migration directions are 100% deterministic, explainable, and traceable to NIST SP 800-131A, CNSA 2.0, and NIST FIPS 203/204/205 standards."*
+Organizations maintain large codebases developed across multiple programming languages and frameworks over extended periods. Inside these repositories:
+- Legacy hash functions (e.g., MD5, SHA-1) or outdated ciphers (e.g., DES) may persist in active code paths.
+- Security hygiene issues, such as hardcoded credentials or API tokens, may exist directly in source files.
+- Classical public-key algorithms (e.g., RSA, ECDSA, Diffie-Hellman) remain common for authentication, digital signatures, and key exchange. While many of these implementations remain secure against classical cryptanalysis today, they face theoretical vulnerability to Shor's algorithm on future cryptanalytically relevant quantum computers.
+- Long-lived confidential data faces the "Harvest Now, Decrypt Later" (HNDL) threat model: encrypted communications can be captured today by adversaries and stored until quantum computing capabilities make decryption feasible.
+
+### The Objective
+Most organizations lack comprehensive visibility into where cryptography is invoked across their codebases and cannot easily differentiate between urgent present-day vulnerabilities and forward-looking post-quantum migration requirements.
+
+### What ECDAT Provides
+ECDAT is an explainable cryptographic discovery and migration-planning prototype. Given a target repository, it:
+1. **Discovers cryptographic usage** across source files in Python, JavaScript/TypeScript, and Java.
+2. **Separates current security status from quantum migration risk** using a dual-track assessment model.
+3. **Applies Mosca's theorem** using configurable planning parameters to organize findings by migration urgency.
+4. **Generates a structured Cryptographic Bill of Materials (CBOM)** detailing each asset's source location, algorithm, and risk attributes.
+5. **Recommends post-quantum migration directions** informed by NIST standards (such as ML-KEM and ML-DSA).
+6. **Visualizes cryptographic dependencies** in an interactive architecture map.
+
+---
+
+## 2. Technical Architecture & Design Principles
+
+### Deterministic & Explainable Policy Logic
+Core security classification and migration policy decisions are deterministic and rule-based:
+- ECDAT uses explainable static-analysis rules and deterministic policy logic rather than AI-generated security classifications.
+- Rules map detected algorithm names, operation types, and key lengths against policy definitions informed by established cryptographic standards, including relevant NIST publications.
+- Every finding includes direct provenance: source file, line number, code snippet, detecting rule identifier, and policy citation.
 
 ```mermaid
 flowchart LR
@@ -45,60 +46,32 @@ flowchart LR
     E & F --> G[CBOM Generator]
     G --> H[(SQLite Database)]
     H --> I[FastAPI REST Backend]
-    I --> J[Next.js 16 Enterprise Dashboard]
+    I --> J[Next.js 16 Dashboard]
 ```
 
-### Key Technical Pillars:
-1. **Multi-Language AST & Static Extraction:**
-   - **Python:** Uses native Python AST (`ast` module) to inspect AST nodes, function calls, keyword arguments, and direct variable assignments. It doesn't just regex match; it parses the syntax tree.
-   - **JavaScript / TypeScript:** Scans crypto imports, Web Crypto APIs, Node `crypto` modules, and CryptoJS calls.
-   - **Java:** Identifies `java.security`, `javax.crypto`, Cipher instance strings, and padding configurations.
-2. **Dual-Track Risk Classification:**
-   - Most security tools lump everything into generic "High/Medium/Low" CVE severity.
-   - ECDAT splits evaluation into **two orthogonal axes**:
+### Core Components
+1. **Multi-Language Static Discovery:**
+   - **Python:** Analyzes Abstract Syntax Trees (`ast` module) to inspect function calls, keyword arguments, and import aliases without executing untrusted code.
+   - **JavaScript / TypeScript:** Rule-based pattern matching over standard library imports, Web Crypto APIs, Node `crypto` modules, and CryptoJS calls.
+   - **Java:** Pattern matching over standard Java Cryptography Architecture (`java.security`, `javax.crypto`) usage, Cipher transformation strings, and key generators.
+2. **Dual-Track Risk Model:**
+   - Instead of a single generic severity score, findings are evaluated across two separate dimensions:
      - **Current Security Status:** Broken, Deprecated, Acceptable, Strong.
      - **Quantum Risk Status:** Vulnerable, Migration Concern, Low Concern, Not Applicable.
-3. **Mosca's Theorem Engine:**
-   - Formula: $\text{Urgency} = X + Y - Z$
-     - $X$ = Shelf-life / Data secrecy requirement (years)
-     - $Y$ = Migration time to re-engineer infrastructure (years)
-     - $Z$ = Threat horizon / time until a practical quantum computer exists (years)
-   - If $X + Y > Z$, the system is **already in danger** due to Harvest Now, Decrypt Later!
-4. **CBOM (Cryptographic Bill of Materials):**
-   - Compliant with emerging supply-chain security standards (NIST IR 8547 / CycloneDX extensions).
-   - Traceable directly to file path, line number, and code snippet.
+3. **Mosca-Style Migration Prioritization:**
+   - Evaluates the inequality: $\text{Urgency} = X + Y - Z$
+     - $X$ = Required data security lifetime (years)
+     - $Y$ = Estimated time to re-architect and migrate the system (years)
+     - $Z$ = Configurable quantum threat horizon/scenario (years)
+   - When $X + Y > Z$, migration planning urgency increases. The threat horizon $Z$ is treated as a configurable scenario assumption, **not a prediction** of when a quantum computer will arrive.
+4. **Structured CBOM:**
+   - Generates an inventory of detected cryptographic assets with source attribution, exportable to JSON and CSV formats.
 
 ---
 
-## 3. The 3-Minute Hackathon Pitch Script
+## 3. Technical Walkthrough & Evaluation Sequence
 
-*Use this structure when pitching in front of the judges booth or stage:*
-
-### [0:00 - 0:45] The Hook & Problem
-> *"Good morning respected judges. Every enterprise is currently blind to its own cryptographic attack surface. If I ask a CTO today: 'How many RSA-1024 or MD5 instances exist in your legacy repositories?' they have to spend weeks doing manual audits. Even worse, nation-state actors are executing 'Harvest Now, Decrypt Later' attacks against encrypted data that must remain confidential for 10 to 20 years.*  
-> *When quantum computers break RSA and ECC, organizations will scramble. We built **ECDAT: Enterprise Cryptographic Discovery & Analysis Tool** to solve this visibility crisis today."*
-
-### [0:45 - 1:45] What We Built & Live Demo Hook
-> *"ECDAT is a full-stack, enterprise-grade cryptographic discovery platform. It statically analyzes codebases across Python, Java, and JavaScript without executing potentially untrusted code.*  
-> *Unlike generic SAST tools, ECDAT does not conflate classical risk with quantum risk. For example, MD5 is broken today classically, but quantum-irrelevant. Conversely, RSA-2048 is completely secure today, but an existential quantum vulnerability.*  
-> *Let us show you a live scan on our test repository containing ~50 cryptographic patterns."*
-
-### [1:45 - 2:30] Showing Key Features
-> *(Point to the screen)*  
-> *"1. Here is our **Scan Engine** showing real-time pipeline telemetry across AST parsing, risk engine, and CBOM generation.*  
-> *2. On the **Findings Page**, every single cryptographic usage shows exact code provenance, the detecting policy rule, and dual-axis risk.*  
-> *3. Under **CBOM**, we export an enterprise-standard Cryptographic Bill of Materials in JSON and CSV.*  
-> *4. In the **Crypto Map**, React Flow renders the interactive architectural dependency graph showing how crypto is distributed across modules.*  
-> *5. And in our **Migration Roadmap**, we use Mosca's inequality to prioritize remediation into Act Now, Plan Migration, and Monitor tiers, pointing developers directly to NIST-standardized Post-Quantum algorithms like ML-KEM and ML-DSA."*
-
-### [2:30 - 3:00] Business Value & Closing
-> *"All of this runs deterministically without hallucinations, backed by a FastAPI async core, SQLAlchemy persistence, and a responsive Next.js 16 frontend. ECDAT gives cybersecurity teams cryptographic agility before quantum decryption becomes a reality. Thank you!"*
-
----
-
-## 4. Feature-by-Feature Showcase Guide (What to Click During the Demo)
-
-When demonstrating the UI, click through the tabs in this exact sequence:
+When evaluating the prototype, the following walkthrough order demonstrates the core capabilities:
 
 ```mermaid
 graph LR
@@ -110,81 +83,74 @@ graph LR
     Step6 --> Step7["7. Reports (/reports)"]
 ```
 
-### 1. Dashboard Overview (`/`)
-- **What to show:** The top executive KPI cards (Total Findings, Critical Findings, Quantum Migration Concerns, Scanned Files).
-- **What to say:** *"This gives the CISO an instant snapshot of the cryptographic health and quantum posture of the application."*
-- **Highlight:** Point out that **Quantum Migration Concerns** and **Current Criticals** are displayed side-by-side to emphasize the dual-track risk.
+### Step 1: Dashboard Overview (`/`)
+- **Focus:** High-level inventory metrics: Total Findings, Current Criticals, Quantum Migration Concerns, Scanned Files, and Scan Duration.
+- **Key Observation:** Current criticals (immediate classical issues) and quantum migration concerns (forward-looking post-quantum concerns) are tracked side-by-side.
 
-### 2. Scan Repository (`/scan`)
-- **What to show:** Click **"Scan Demo Repository"**.
-- **What to say:** *"Notice that this is not a mock or fake loader. The backend is spinning up worker threads, snapshotting the files, executing AST parsers, applying the YAML risk policy, and streaming progress."*
-- **Highlight:** Mention that it supports local path scanning and ZIP archive uploads with built-in zip-bomb defense limits (max expansion ratio 100:1, traversal checks).
+### Step 2: Scan Initiation (`/scan`)
+- **Focus:** Triggering a scan via "Scan Demo Repository".
+- **Key Observation:** The background engine creates a snapshot of target files, executes static scanners across worker threads, streams stage transitions (Scanning → Assessing Risk → Generating CBOM → Completed), and stores results in the SQLite database.
+- **Note:** Supports local directory paths and ZIP uploads with safety constraints (expansion ratio limits and path traversal checks).
 
-### 3. Findings Explorer (`/findings`)
-- **What to show:** Expand an **MD5** finding, then expand an **RSA-2048** finding.
-- **What to say:**
-  - *"Look at MD5: Current Security is **Broken**, Quantum Risk is **Not Applicable** (no need for a quantum computer to break MD5!)."*
-  - *"Now look at RSA-2048: Current Security is **Strong/Acceptable**, but Quantum Risk is **Vulnerable / Migration Concern**."*
-- **Highlight:** Open the detail drawer to show the **10-point evidence view**: file, line number, code snippet, rule ID, NIST policy reference, and recommended replacement.
+### Step 3: Findings Explorer (`/findings`)
+- **Focus:** Examining specific findings with expanded detail panels.
+- **Exemplar Comparison (Dual-Track Model):**
+  - **MD5 Finding (`python_app/hasher.py:10`):**
+    - Current Security: **Broken** (collision resistance broken classically).
+    - Quantum Risk: **Not Applicable** (a quantum computer is not required to compromise MD5).
+  - **RSA-2048 Finding (`python_app/auth.py:23`):**
+    - Current Security: **Acceptable** (remains secure against classical cryptanalysis today).
+    - Quantum Risk: **Vulnerable / Migration Concern** (theoretically susceptible to Shor's algorithm).
+- **Detail View Elements:** File path, line number, code snippet, scanner rule ID, policy reference, and recommended migration direction.
 
-### 4. Crypto Map (`/crypto-map`)
-- **What to show:** Pan and zoom the React Flow graph.
-- **What to say:** *"Architects need to see how cryptography is clustered. This interactive graph connects root applications to directories, source files, and leaf cryptographic primitives, colored by risk severity."*
+### Step 4: Interactive Architecture Map (`/crypto-map`)
+- **Focus:** The React Flow graph visualization.
+- **Key Observation:** Visualizes the relationship from the application root through directories and source files down to individual cryptographic primitives, colored by risk tier.
 
-### 5. CBOM (`/cbom`)
-- **What to show:** The searchable, sortable Cryptographic Bill of Materials table.
-- **What to say:** *"Just like modern software supply chains require an SBOM for libraries, upcoming cybersecurity mandates require a CBOM for cryptography. Every entry is exportable to JSON and CSV."*
+### Step 5: Cryptographic Bill of Materials (`/cbom`)
+- **Focus:** The structured cryptographic inventory table.
+- **Key Observation:** Tabular inventory providing algorithm, library, operation type, key size, source location, current risk, quantum risk, and migration priority. Data is sortable and searchable.
 
-### 6. Migration Plan (`/migration`)
-- **What to show:** The four urgency tiers (**Act Now**, **Plan Migration**, **Monitor**, **No Urgent Action**).
-- **What to say:** *"How does an enterprise prioritize what to fix first? We implement **Mosca's Theorem**. If your data shelf-life plus migration duration exceeds the quantum threat horizon, it lands in 'Act Now'."*
-- **Highlight:** Point out the algorithm-specific replacement recommendations:
-  - *RSA for Key Exchange* $\rightarrow$ **ML-KEM (Kyber / FIPS 203)**
-  - *RSA / ECDSA for Signatures* $\rightarrow$ **ML-DSA (Dilithium / FIPS 204)**
-  - *Stateless Hash-based Signatures* $\rightarrow$ **SLH-DSA (SPHINCS+ / FIPS 205)**
+### Step 6: Migration Roadmap (`/migration`)
+- **Focus:** Grouped prioritization tiers: **Act Now**, **Plan Migration**, **Monitor**, and **No Urgent Action**.
+- **Key Observation:** Findings are organized by Mosca urgency. Algorithms map to modern post-quantum directions informed by NIST standards:
+  - *Digital Signatures (RSA, ECDSA)* $\rightarrow$ **ML-DSA** (NIST FIPS 204) or **SLH-DSA** (NIST FIPS 205).
+  - *Key Establishment / Exchange* $\rightarrow$ **ML-KEM** (NIST FIPS 203) or hybrid key-establishment schemes.
 
-### 7. Reports & Export (`/reports`)
-- **What to show:** Click "Download CBOM (CSV)" or "Download Full Report (JSON)".
-- **What to say:** *"Security auditors can immediately ingest this data into their enterprise GRC or SIEM tools."*
-
----
-
-## 5. Winning Answers to Anticipated Judge Questions
-
-### Q1: "Why not just use SonarQube, Semgrep, or Snyk?"
-> **Your Answer:**  
-> *"Generic SAST tools are great at finding general bugs and known CVEs, but they fail at post-quantum readiness. They treat cryptography as an afterthought—flagging MD5 as a weak hash, but completely ignoring RSA-2048 because RSA-2048 has no CVE today. They do not calculate quantum threat horizons, they do not evaluate Mosca's equation, and they cannot generate a specialized Cryptographic Bill of Materials (CBOM) with PQC migration roadmaps. ECDAT is purpose-built for cryptographic discovery and quantum agility."*
-
-### Q2: "Are you using an LLM to detect these vulnerabilities?"
-> **Your Answer:**  
-> *"No, and that is an intentional design choice. Cryptographic compliance requires **100% determinism, zero hallucinations, and explainable audit trails**. If a bank audits their codebase, an LLM could give different answers on different days. ECDAT uses AST parsing and deterministic rule engines mapped directly to NIST SP 800-131A and CNSA 2.0 standards. LLMs could optionally be used later only to draft developer pull-request summaries, never to decide cryptographic risk."*
-
-### Q3: "Is the quantum threat really urgent today if quantum computers don't exist yet?"
-> **Your Answer:**  
-> *"Yes, because of **Harvest Now, Decrypt Later (HNDL)**. If a healthcare system or defense contractor has data that must remain legally confidential for 15 years ($X=15$), and re-architecting their enterprise takes 5 years ($Y=5$), their timeline is 20 years. If a quantum computer capable of breaking RSA arrives in 12 years ($Z=12$), their data is already vulnerable today ($15 + 5 - 12 = +8$ years of exposure). That is why NIST released FIPS 203, 204, and 205 in August 2024, and why government agencies are mandating PQC inventories now."*
-
-### Q4: "How do you avoid false positives and false negatives?"
-> **Your Answer:**  
-> *"For Python, we use the Abstract Syntax Tree (AST), which inspects the syntactic structure of code rather than naive text matching. For example, it tracks function calls and argument keywords. We also report confidence ratings (High, Medium, Low) and separate true cryptographic primitives from general 'security hygiene' findings like hardcoded passwords. We also explicitly disclose our current limitations: we focus on source code static analysis, not dynamic runtime memory or binary analysis."*
-
-### Q5: "What are your future plans to make this a commercial product?"
-> **Your Answer:**  
-> *"1. Expanding AST scanners to Go, Rust, and C/C++ (crucial for embedded firmware and kernel modules).  
-> 2. Integrating directly into GitHub Actions / GitLab CI/CD pipelines to block PRs introducing deprecated algorithms.  
-> 3. Standardizing CBOM output with CycloneDX v1.6 cryptographic extensions.  
-> 4. Automated remediation: generating pull requests that swap legacy crypto calls with PQC library wrappers (like liboqs or BouncyCastle PQC)."*
+### Step 7: Reports & Export (`/reports`)
+- **Focus:** Exporting analysis data.
+- **Key Observation:** Provides structured JSON and CSV downloads for integration into external auditing tools or reporting pipelines.
 
 ---
 
-## 6. Quick Cheat Sheet for Demo Day
+## 4. Frequently Asked Technical Questions
 
-| Metric / Fact | Number / Value |
+### Q1: How does this differ from general-purpose static analysis tools?
+> General-purpose SAST tools identify common security vulnerabilities and known CVEs, but typically treat cryptographic primitives as generic findings (such as flagging MD5 as an insecure hash). They generally do not evaluate post-quantum readiness, do not track quantum risk separately from classical risk, do not implement Mosca-style timeline evaluation, and do not produce structured cryptographic inventories (CBOMs) with post-quantum migration directions. ECDAT is specifically designed for cryptographic asset discovery and quantum transition planning.
+
+### Q2: Does ECDAT use machine learning or LLMs for security decisions?
+> No. Core security classifications, risk ratings, and migration recommendations are deterministic and rule-based. They are driven by an explicit YAML policy informed by established cryptographic standards, including relevant NIST publications. This ensures consistent, reproducible results and clear auditability.
+
+### Q3: Why is quantum risk relevant if practical quantum computers are not yet deployed?
+> Because of the "Harvest Now, Decrypt Later" threat model. If sensitive data must maintain legal or operational confidentiality for 10–20 years, and system migration requires several years of planning and re-engineering, exposure to future quantum decryption begins immediately for data transmitted today using classical public-key cryptography. This is why organizations such as NIST have published post-quantum standards (FIPS 203, 204, and 205).
+
+### Q4: What are the current limitations of the static scanner?
+> The prototype focuses on source-code static analysis. Python uses AST-based parsing with import alias tracking, while JavaScript and Java currently use regex- and pattern-based heuristic scanners, which may produce false positives or false negatives in complex codebases. Compiled binaries, container images, dynamic runtime behavior, and live network/TLS handshakes are not scanned by the current prototype.
+
+---
+
+## 5. Verified Prototype Metrics
+
+The following metrics are verified directly against the bundled demo codebase (`demo_repository/`):
+
+| Metric | Verified Value |
 |---|---|
-| **Demo Repository Findings** | ~50 real findings discovered dynamically |
-| **Languages Supported** | Python (AST), JavaScript/TypeScript (Regex/Node/WebCrypto), Java (Cipher/JCA) |
-| **Backend Tests** | 91 passing tests (pytest) |
-| **Frontend Tests** | 28 passing unit tests |
-| **TypeScript / Build Errors** | 0 errors, static Next.js production build |
-| **Standards Mapped** | NIST SP 800-131A, CNSA 2.0, FIPS 203 (ML-KEM), FIPS 204 (ML-DSA), FIPS 205 (SLH-DSA) |
-| **Persistence** | SQLite with SQLAlchemy ORM + localStorage rehydration |
-| **API Endpoints** | 14 REST endpoints documented in OpenAPI / Swagger (`/docs`) |
+| Bundled demo findings | ~50 findings |
+| Files scanned | 10 files |
+| Languages scanned | Python, JavaScript, Java |
+| Bundled demo scan duration | ~0.55 seconds |
+| Backend test suite | 91 passed (`pytest`) |
+| Frontend test suite | 28 passed (`node --test`) |
+| Frontend production build | ✅ Clean (0 TypeScript errors) |
+| Standards referenced | NIST SP 800-131A Rev. 2, NIST FIPS 203, 204, 205, CNSA 2.0 |
+| Persistence | SQLite via SQLAlchemy |
