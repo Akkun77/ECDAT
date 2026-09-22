@@ -66,7 +66,7 @@ export default function FindingsPage() {
             className={`px-3 py-1 rounded-full text-xs font-medium transition-colors border ${
               selected === opt 
                 ? 'bg-blue-600 text-white border-blue-500 shadow-sm' 
-                : 'bg-slate-900/60 text-slate-300 border-slate-700/60 hover:bg-slate-800'
+                : 'bg-[#152033] text-slate-300 border-[#1e2d42] hover:bg-[#1e2d42]'
             }`}
           >
             {opt}
@@ -78,24 +78,25 @@ export default function FindingsPage() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-6 p-6">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-2">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-3 pb-2 border-b border-[#1e2d42]">
         <div>
-          <h1 className="text-3xl font-bold text-slate-100 flex items-center gap-3">
-            <AlertTriangle className="w-8 h-8 text-amber-400" />
+          <h1 className="text-2xl font-bold text-slate-100 flex items-center gap-2.5">
+            <AlertTriangle className="w-6 h-6 text-amber-400 shrink-0" />
             Cryptographic Findings
           </h1>
-          <p className="text-slate-400 mt-2">
+          <p className="text-slate-400 text-sm mt-1">
             Every discovery is traceable to exact source files, call sites, static analysis rules, and security policies.
           </p>
         </div>
-        <div className="text-sm text-slate-400 bg-slate-800/60 px-4 py-2 rounded-xl border border-slate-700/50">
+        <div className="text-xs text-slate-400 bg-[#0e1726] px-3.5 py-2 rounded-lg border border-[#1e2d42] shrink-0">
           Showing <span className="font-bold text-slate-200">{filteredFindings.length}</span> of{' '}
           <span className="font-bold text-slate-200">{summary?.total_findings ?? findings.length}</span> findings
         </div>
       </div>
 
       {/* Filters Card */}
-      <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-5 space-y-4 shadow-lg">
+      <div className="bg-[#0e1726] border border-[#1e2d42] rounded-xl p-5 space-y-4">
         <div className="relative max-w-md">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
@@ -103,7 +104,7 @@ export default function FindingsPage() {
             placeholder="Search by algorithm, filename, or reason..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-950 border border-slate-700 rounded-lg pl-10 pr-4 py-2 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
+            className="w-full bg-[#070b14] border border-[#1e2d42] rounded-lg pl-10 pr-4 py-2 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
           />
         </div>
         
@@ -136,7 +137,7 @@ export default function FindingsPage() {
       {/* Findings List */}
       <div className="space-y-3">
         {filteredFindings.length === 0 ? (
-          <div className="bg-slate-800/30 border border-slate-700/30 rounded-xl p-12 text-center text-slate-400">
+          <div className="bg-[#0e1726] border border-[#1e2d42] rounded-xl p-12 text-center text-slate-400">
             No findings match the selected filters.
           </div>
         ) : (
@@ -152,10 +153,10 @@ export default function FindingsPage() {
             const isSecurityHygiene = finding.category === 'security_hygiene';
 
             return (
-              <div key={finding.id} className="bg-slate-800/40 border border-slate-700/50 rounded-xl overflow-hidden transition-all duration-200 shadow-md">
+              <div key={finding.id} className="bg-[#0e1726] border border-[#1e2d42] rounded-xl overflow-hidden transition-all duration-200">
                 {/* Row Header */}
                 <div 
-                  className="flex items-center gap-4 p-4 cursor-pointer hover:bg-slate-800/70 transition-colors select-none"
+                  className="flex items-center gap-4 p-4 cursor-pointer hover:bg-[#152033]/60 transition-colors select-none"
                   onClick={() => setExpandedId(isExpanded ? null : finding.id)}
                 >
                   <div className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase shrink-0 ${severityBg(finding.severity)}`}>
@@ -165,7 +166,7 @@ export default function FindingsPage() {
                   <div className="flex-1 grid grid-cols-12 gap-3 items-center min-w-0">
                     <div className="col-span-3 font-semibold text-slate-100 truncate">
                       {isSecurityHygiene ? (
-                        <span className="text-orange-400 font-medium">Security Hygiene Finding</span>
+                        <span className="text-amber-400 font-medium">Security Hygiene Finding</span>
                       ) : (
                         formatAlgorithm(finding.algorithm || '')
                       )}
@@ -201,19 +202,19 @@ export default function FindingsPage() {
                 
                 {/* Expanded Detail Panel */}
                 {isExpanded && (
-                  <div className="p-6 border-t border-slate-700/60 bg-slate-950/60 space-y-6">
+                  <div className="p-6 border-t border-[#1e2d42] bg-[#070b14]/80 space-y-6">
                     {/* 1. Algorithm + Severity */}
-                    <div className="flex items-center justify-between gap-4 flex-wrap pb-3 border-b border-slate-800">
+                    <div className="flex items-center justify-between gap-4 flex-wrap pb-3 border-b border-[#1e2d42]">
                       <div className="flex items-center gap-3">
-                        <h2 className="text-2xl font-bold text-slate-100">
+                        <h2 className="text-xl font-bold text-slate-100">
                           {isSecurityHygiene ? 'Hardcoded Secret / Credential' : formatAlgorithm(finding.algorithm || '')}
                         </h2>
                         {finding.key_size && (
-                          <span className="text-sm font-mono px-2.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+                          <span className="text-xs font-mono px-2.5 py-0.5 rounded bg-[#152033] text-slate-300 border border-[#1e2d42]">
                             Key size: {finding.key_size} bits
                           </span>
                         )}
-                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${severityBg(finding.severity)}`}>
+                        <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${severityBg(finding.severity)}`}>
                           {finding.severity?.toUpperCase()} SEVERITY
                         </span>
                       </div>
@@ -230,7 +231,7 @@ export default function FindingsPage() {
                       </div>
                       {/* 3. Detected Code */}
                       {finding.code_snippet && (
-                        <pre className="bg-slate-950 border border-slate-800 p-4 rounded-lg overflow-x-auto text-xs text-slate-200 font-mono leading-relaxed shadow-inner">
+                        <pre className="bg-[#070b14] border border-[#1e2d42] p-4 rounded-lg overflow-x-auto text-xs text-slate-200 font-mono leading-relaxed">
                           <code>{finding.code_snippet}</code>
                         </pre>
                       )}
@@ -239,12 +240,12 @@ export default function FindingsPage() {
                     {/* 4. Current Security & 5. Quantum Migration Status (Distinct Cards) */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Left: Current Security */}
-                      <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4 space-y-2">
+                      <div className="bg-[#0e1726] border border-[#1e2d42] rounded-xl p-4 space-y-2">
                         <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-2">
                           <Shield className="w-4 h-4 text-blue-400" />
                           Current Security Status (Today)
                         </div>
-                        <div className={`text-xl font-bold ${currentSecurityColor(currentSec)} flex items-center gap-2`}>
+                        <div className={`text-lg font-bold ${currentSecurityColor(currentSec)} flex items-center gap-2`}>
                           {formatCurrentSecurity(currentSec)}
                         </div>
                         <p className="text-xs text-slate-400">
@@ -253,12 +254,12 @@ export default function FindingsPage() {
                       </div>
 
                       {/* Right: Quantum Migration Status */}
-                      <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4 space-y-2">
+                      <div className="bg-[#0e1726] border border-[#1e2d42] rounded-xl p-4 space-y-2">
                         <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-2">
                           <Zap className="w-4 h-4 text-amber-400" />
                           Quantum Migration Status (Future)
                         </div>
-                        <div className={`text-xl font-bold ${quantumRiskColor(quantumRisk)} flex items-center gap-2`}>
+                        <div className={`text-lg font-bold ${quantumRiskColor(quantumRisk)} flex items-center gap-2`}>
                           {formatQuantumRisk(quantumRisk)}
                         </div>
                         <p className="text-xs text-slate-400">
@@ -269,37 +270,37 @@ export default function FindingsPage() {
 
                     {/* 6. Why It Was Detected & 7. Why It Matters */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4 space-y-2">
+                      <div className="bg-[#0e1726] border border-[#1e2d42] rounded-xl p-4 space-y-2">
                         <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
                           <Info className="w-4 h-4 text-blue-400" />
                           Why It Was Detected
                         </h3>
-                        <p className="text-sm text-slate-300 leading-relaxed">
+                        <p className="text-xs text-slate-300 leading-relaxed">
                           {finding.reason || 'Pattern matched cryptographic signature in static analysis.'}
                         </p>
                       </div>
 
-                      <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4 space-y-2">
+                      <div className="bg-[#0e1726] border border-[#1e2d42] rounded-xl p-4 space-y-2">
                         <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
                           <AlertTriangle className="w-4 h-4 text-amber-400" />
                           Why It Matters
                         </h3>
-                        <p className="text-sm text-slate-300 leading-relaxed">
+                        <p className="text-xs text-slate-300 leading-relaxed">
                           {finding.risk_assessment?.explanation || finding.reason || 'Security implications depend on operational context and threat model.'}
                         </p>
                       </div>
                     </div>
 
                     {/* 8. Policy / Rule ID */}
-                    <div className="bg-slate-900/40 border border-slate-800/80 rounded-xl p-4 space-y-2 text-xs">
+                    <div className="bg-[#0e1726] border border-[#1e2d42] rounded-xl p-4 space-y-2 text-xs">
                       <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
                         Traceable Policy Guidance
                       </div>
                       <div className="flex flex-wrap items-center gap-3">
-                        <span className="bg-slate-800 px-3 py-1 rounded text-slate-300 border border-slate-700">
+                        <span className="bg-[#152033] px-3 py-1 rounded text-slate-300 border border-[#1e2d42]">
                           Policy: {finding.policy_source || 'ECDAT policy based on NIST SP 800-131A and CNSA 2.0'}
                         </span>
-                        <span className="bg-slate-800 px-3 py-1 rounded text-blue-300 font-mono border border-slate-700">
+                        <span className="bg-[#152033] px-3 py-1 rounded text-blue-400 font-mono border border-[#1e2d42]">
                           Rule: {finding.policy_rule_id || finding.scanner_rule_id || 'RULE-001'}
                         </span>
                       </div>
@@ -307,7 +308,7 @@ export default function FindingsPage() {
 
                     {/* 9. Mosca / Migration Priority */}
                     {mosca && (
-                      <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 space-y-3">
+                      <div className="bg-[#0e1726] border border-[#1e2d42] rounded-xl p-4 space-y-3">
                         <div className="flex justify-between items-center flex-wrap gap-2">
                           <div className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
                             Mosca Prioritization Analysis
@@ -318,25 +319,25 @@ export default function FindingsPage() {
                         </div>
 
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                          <div className="bg-slate-950 p-2.5 rounded border border-slate-800">
-                            <span className="text-slate-500 block">Data Lifetime (X)</span>
+                          <div className="bg-[#070b14] p-2.5 rounded-lg border border-[#1e2d42]">
+                            <span className="text-slate-400 block">Data Lifetime (X)</span>
                             <span className="text-slate-200 font-bold">{mosca.data_lifetime_years} years</span>
                           </div>
-                          <div className="bg-slate-950 p-2.5 rounded border border-slate-800">
-                            <span className="text-slate-500 block">Migration Time (Y)</span>
+                          <div className="bg-[#070b14] p-2.5 rounded-lg border border-[#1e2d42]">
+                            <span className="text-slate-400 block">Migration Time (Y)</span>
                             <span className="text-slate-200 font-bold">{mosca.migration_time_years} years</span>
                           </div>
-                          <div className="bg-slate-950 p-2.5 rounded border border-slate-800">
-                            <span className="text-slate-500 block">Threat Horizon (Z)</span>
+                          <div className="bg-[#070b14] p-2.5 rounded-lg border border-[#1e2d42]">
+                            <span className="text-slate-400 block">Threat Horizon (Z)</span>
                             <span className="text-slate-200 font-bold">{mosca.threat_horizon_years} years</span>
                           </div>
-                          <div className="bg-slate-950 p-2.5 rounded border border-slate-800">
-                            <span className="text-slate-500 block">Business Criticality</span>
+                          <div className="bg-[#070b14] p-2.5 rounded-lg border border-[#1e2d42]">
+                            <span className="text-slate-400 block">Business Criticality</span>
                             <span className="text-slate-200 font-bold capitalize">{mosca.business_criticality || 'Medium'}</span>
                           </div>
                         </div>
                         {mosca.is_demo_assumption && (
-                          <p className="text-[11px] text-slate-500 italic">
+                          <p className="text-[11px] text-slate-400 italic">
                             * Note: Lifetime and threat horizon values are configured demo assumptions for planning illustration.
                           </p>
                         )}
@@ -348,23 +349,23 @@ export default function FindingsPage() {
                     {/* MITIGATE card */}
                     {mitigation && (
                       <>
-                        <div className="bg-amber-950/25 border border-amber-500/40 rounded-xl p-5 space-y-3 min-w-0">
+                        <div className="bg-amber-950/20 border border-amber-500/30 rounded-xl p-5 space-y-3 min-w-0">
                           <div className="flex items-start gap-3">
-                            <div className="p-2 rounded-lg bg-amber-500/15 border border-amber-500/25 shrink-0">
+                            <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 shrink-0">
                               <ListChecks className="w-5 h-5 text-amber-400" />
                             </div>
                             <div>
-                              <h3 className="text-sm font-bold text-amber-300 uppercase tracking-widest">Mitigate</h3>
-                              <p className="text-xs text-amber-200/50 mt-0.5">Reduce risk now while migration is prepared</p>
+                              <h3 className="text-xs font-bold text-amber-300 uppercase tracking-widest">Mitigate</h3>
+                              <p className="text-xs text-amber-200/60 mt-0.5">Reduce risk now while migration is prepared</p>
                             </div>
                           </div>
-                          <div className="space-y-2.5 text-sm pl-[52px]">
+                          <div className="space-y-2.5 text-xs pl-[44px]">
                             <div>
-                              <div className="text-[11px] font-bold text-amber-300/70 uppercase tracking-wider mb-0.5">Immediate Action</div>
+                              <div className="text-[11px] font-bold text-amber-400/80 uppercase tracking-wider mb-0.5">Immediate Action</div>
                               <p className="text-slate-200 leading-relaxed break-words">{mitigation.immediate_action}</p>
                             </div>
                             <div>
-                              <div className="text-[11px] font-bold text-amber-300/70 uppercase tracking-wider mb-0.5">Interim Controls</div>
+                              <div className="text-[11px] font-bold text-amber-400/80 uppercase tracking-wider mb-0.5">Interim Controls</div>
                               <ul className="space-y-0.5 text-slate-300 break-words">
                                 {mitigation.interim_controls.slice(0, 3).map((control, index) => (
                                   <li key={`${finding.id}-control-${index}`} className="flex gap-2"><span className="text-amber-400/80">•</span><span>{control}</span></li>
@@ -373,7 +374,7 @@ export default function FindingsPage() {
                             </div>
                             {mitigation.implementation_caution && (
                               <div>
-                                <div className="text-[11px] font-bold text-amber-300/70 uppercase tracking-wider mb-0.5">Implementation Caution</div>
+                                <div className="text-[11px] font-bold text-amber-400/80 uppercase tracking-wider mb-0.5">Implementation Caution</div>
                                 <p className="text-slate-400 leading-relaxed break-words text-xs">{mitigation.implementation_caution}</p>
                               </div>
                             )}
@@ -385,28 +386,28 @@ export default function FindingsPage() {
                     )}
 
                     {/* MIGRATE card */}
-                    <div className="bg-gradient-to-br from-blue-950/70 to-blue-900/30 border-2 border-blue-500/60 rounded-xl p-5 space-y-3 shadow-xl shadow-blue-950/20">
+                    <div className="bg-blue-950/20 border border-blue-500/40 rounded-xl p-5 space-y-3">
                       <div className="flex items-start gap-3">
-                        <div className="p-2 rounded-lg bg-blue-500/15 border border-blue-500/30 shrink-0">
+                        <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20 shrink-0">
                           <ArrowRight className="w-5 h-5 text-blue-400" />
                         </div>
                         <div>
-                          <h3 className="text-sm font-bold text-blue-300 uppercase tracking-widest">Migrate</h3>
-                          <p className="text-xs text-blue-200/50 mt-0.5">Target cryptographic state</p>
+                          <h3 className="text-xs font-bold text-blue-300 uppercase tracking-widest">Migrate</h3>
+                          <p className="text-xs text-blue-200/60 mt-0.5">Target cryptographic state</p>
                         </div>
                       </div>
-                      <p className="text-lg font-bold text-slate-50 leading-relaxed pl-[52px]">
+                      <p className="text-base font-bold text-slate-100 leading-relaxed pl-[44px]">
                         {finding.migration_recommendation?.suggested_direction || finding.risk_assessment?.recommendation || 'Evaluate modern algorithm alternatives.'}
                       </p>
                       {finding.migration_recommendation?.migration_notes && (
-                        <p className="text-xs text-slate-400 leading-relaxed pl-[52px] pt-1 border-t border-blue-800/40">
+                        <p className="text-xs text-slate-400 leading-relaxed pl-[44px] pt-1 border-t border-blue-900/40">
                           {finding.migration_recommendation.migration_notes}
                         </p>
                       )}
                     </div>
 
                     {/* VERIFY strip */}
-                    <div className="bg-emerald-950/20 border border-emerald-700/40 rounded-xl px-5 py-3 flex items-center gap-3">
+                    <div className="bg-emerald-950/20 border border-emerald-500/30 rounded-xl px-4 py-3 flex items-center gap-3">
                       <div className="p-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 shrink-0">
                         <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                       </div>

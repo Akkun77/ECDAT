@@ -18,7 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ScanProvider>
           <div className="flex h-screen overflow-hidden">
             <Sidebar />
-            <main className="flex-1 overflow-y-auto bg-slate-950">
+            <main className="flex-1 overflow-y-auto bg-[#070b14]">
               {children}
             </main>
           </div>

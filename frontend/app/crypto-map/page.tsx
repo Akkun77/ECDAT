@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo } from 'react';
 import { useScanContext } from '@/components/scan-provider';
-import { formatAlgorithm, formatCurrentSecurity, formatQuantumRisk, severityBg } from '@/lib/display';
+import { formatAlgorithm, formatCurrentSecurity, formatQuantumRisk } from '@/lib/display';
 import {
   ReactFlow,
   Background,
@@ -23,11 +23,11 @@ import Link from 'next/link';
 // Custom node components
 function AppNode({ data }: { data: { label: string } }) {
   return (
-    <div className="px-4 py-3 bg-slate-800 border-2 border-blue-500/50 rounded-xl shadow-lg shadow-blue-500/10 min-w-[160px]">
+    <div className="px-4 py-3 bg-[#0e1726] border-2 border-blue-500/60 rounded-xl shadow-lg min-w-[160px]">
       <Handle type="source" position={Position.Bottom} className="!bg-blue-500 !w-2 !h-2" />
       <div className="flex items-center gap-2">
         <Box className="w-4 h-4 text-blue-400" />
-        <span className="text-sm font-semibold text-slate-100">{data.label}</span>
+        <span className="text-xs font-bold text-slate-100">{data.label}</span>
       </div>
     </div>
   );
@@ -35,7 +35,7 @@ function AppNode({ data }: { data: { label: string } }) {
 
 function DirNode({ data }: { data: { label: string } }) {
   return (
-    <div className="px-3 py-2 bg-slate-800/80 border border-slate-600/50 rounded-lg min-w-[120px]">
+    <div className="px-3 py-2 bg-[#0e1726] border border-[#1e2d42] rounded-lg min-w-[120px]">
       <Handle type="target" position={Position.Top} className="!bg-slate-500 !w-1.5 !h-1.5" />
       <Handle type="source" position={Position.Bottom} className="!bg-slate-500 !w-1.5 !h-1.5" />
       <div className="flex items-center gap-2">
@@ -48,7 +48,7 @@ function DirNode({ data }: { data: { label: string } }) {
 
 function FileNode({ data }: { data: { label: string } }) {
   return (
-    <div className="px-3 py-2 bg-slate-800/60 border border-slate-600/40 rounded-lg min-w-[120px]">
+    <div className="px-3 py-2 bg-[#0e1726] border border-[#1e2d42] rounded-lg min-w-[120px]">
       <Handle type="target" position={Position.Top} className="!bg-slate-500 !w-1.5 !h-1.5" />
       <Handle type="source" position={Position.Bottom} className="!bg-slate-500 !w-1.5 !h-1.5" />
       <div className="flex items-center gap-2">
@@ -61,35 +61,35 @@ function FileNode({ data }: { data: { label: string } }) {
 
 function CryptoNode({ data }: { data: { label: string; severity?: string; current_security?: string; quantum_status?: string } }) {
   const borderColor = {
-    critical: 'border-red-500/60', high: 'border-orange-500/60',
-    medium: 'border-yellow-500/60', low: 'border-blue-500/40',
-    informational: 'border-slate-500/40',
-  }[data.severity || 'informational'] || 'border-slate-500/40';
+    critical: 'border-red-500/50', high: 'border-amber-500/50',
+    medium: 'border-amber-500/40', low: 'border-blue-500/40',
+    informational: 'border-[#1e2d42]',
+  }[data.severity || 'informational'] || 'border-[#1e2d42]';
 
   const bgColor = {
-    critical: 'bg-red-500/5', high: 'bg-orange-500/5',
-    medium: 'bg-yellow-500/5', low: 'bg-blue-500/5',
-    informational: 'bg-slate-500/5',
-  }[data.severity || 'informational'] || 'bg-slate-500/5';
+    critical: 'bg-red-500/10', high: 'bg-amber-500/10',
+    medium: 'bg-amber-500/10', low: 'bg-blue-500/10',
+    informational: 'bg-[#0e1726]',
+  }[data.severity || 'informational'] || 'bg-[#0e1726]';
 
   const textColor = {
-    critical: 'text-red-400', high: 'text-orange-400',
-    medium: 'text-yellow-400', low: 'text-blue-400',
+    critical: 'text-red-400', high: 'text-amber-400',
+    medium: 'text-amber-400', low: 'text-blue-400',
     informational: 'text-slate-400',
   }[data.severity || 'informational'] || 'text-slate-400';
 
   const csColor = {
-    broken: 'text-red-400', deprecated: 'text-orange-400',
-    acceptable: 'text-green-400', strong: 'text-emerald-400',
+    broken: 'text-red-400', deprecated: 'text-amber-400',
+    acceptable: 'text-emerald-400', strong: 'text-emerald-400',
   }[data.current_security || ''] || 'text-slate-400';
 
   const qColor = {
     vulnerable: 'text-red-400', migration_concern: 'text-amber-400',
-    low_concern: 'text-green-400', not_applicable: 'text-slate-500',
+    low_concern: 'text-emerald-400', not_applicable: 'text-slate-500',
   }[data.quantum_status || ''] || 'text-slate-400';
 
   return (
-    <div className={`px-3 py-2.5 ${bgColor} border ${borderColor} rounded-lg min-w-[140px] cursor-pointer hover:scale-105 transition-transform`}>
+    <div className={`px-3 py-2.5 ${bgColor} border ${borderColor} rounded-lg min-w-[140px] cursor-pointer hover:border-slate-500 transition-colors`}>
       <Handle type="target" position={Position.Top} className="!bg-slate-500 !w-1.5 !h-1.5" />
       <div className="flex items-center gap-2 mb-1">
         <Shield className={`w-3.5 h-3.5 ${textColor}`} />
@@ -127,8 +127,6 @@ function layoutNodes(graphNodes: { id: string; type: string; data: Record<string
 
   // BFS layout
   const positions = new Map<string, { x: number; y: number }>();
-  const visited = new Set<string>();
-  const queue: { id: string; depth: number; index: number; parentX: number }[] = [{ id: root.id, depth: 0, index: 0, parentX: 0 }];
   const depthCounts = new Map<number, number>();
 
   // First pass: count nodes per depth
@@ -198,8 +196,8 @@ export default function CryptoMapPage() {
       target: e.target,
       type: 'smoothstep',
       animated: false,
-      style: { stroke: '#475569', strokeWidth: 1 },
-      markerEnd: { type: MarkerType.ArrowClosed, color: '#475569', width: 12, height: 12 },
+      style: { stroke: '#1e2d42', strokeWidth: 1.5 },
+      markerEnd: { type: MarkerType.ArrowClosed, color: '#1e2d42', width: 12, height: 12 },
     }));
 
     return { initialNodes: nodes, initialEdges: edges };
@@ -218,12 +216,12 @@ export default function CryptoMapPage() {
 
   if (state !== 'completed' || !graph) {
     return (
-      <div className="flex items-center justify-center h-full">
+      <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <Network className="w-16 h-16 text-slate-600 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-slate-300 mb-2">Crypto Architecture Map</h2>
-          <p className="text-slate-500 mb-6">Run a scan to visualize the cryptographic architecture.</p>
-          <Link href="/scan" className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-medium transition-colors">
+          <Network className="w-12 h-12 text-slate-600 mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-slate-100 mb-2">Crypto Architecture Map</h2>
+          <p className="text-slate-400 text-sm mb-6 max-w-md">Run a scan to visualize the cryptographic architecture.</p>
+          <Link href="/scan" className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm font-medium transition-colors border border-blue-400/30">
             Start Scanning
           </Link>
         </div>
@@ -236,50 +234,53 @@ export default function CryptoMapPage() {
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="px-6 py-4 border-b border-slate-800 flex-shrink-0">
+      <div className="px-6 py-4 border-b border-[#1e2d42] bg-[#070b14] flex-shrink-0">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold text-slate-100 flex items-center gap-2">
-              <Network className="w-5 h-5 text-blue-400" /> Crypto Architecture Map
+            <h1 className="text-2xl font-bold text-slate-100 flex items-center gap-2.5">
+              <Network className="w-6 h-6 text-blue-400 shrink-0" /> Crypto Architecture Map
             </h1>
-            <p className="text-sm text-slate-400 mt-0.5">
+            <p className="text-sm text-slate-400 mt-1">
               Interactive visualization of cryptographic assets across the application.
             </p>
           </div>
-          <div className="flex gap-4 text-sm">
+          <div className="flex items-center gap-3 text-xs bg-[#0e1726] border border-[#1e2d42] px-3.5 py-2 rounded-lg">
             <span className="text-slate-400">{graph.nodes.length} nodes</span>
+            <span className="text-slate-600">|</span>
             <span className="text-slate-400">{graph.edges.length} edges</span>
-            <span className="text-red-400">{cryptoNodes.filter(n => n.data.severity === 'critical').length} critical</span>
-            <span className="text-orange-400">{cryptoNodes.filter(n => n.data.severity === 'high').length} high</span>
+            <span className="text-slate-600">|</span>
+            <span className="text-red-400 font-medium">{cryptoNodes.filter(n => n.data.severity === 'critical').length} critical</span>
+            <span className="text-slate-600">|</span>
+            <span className="text-amber-400 font-medium">{cryptoNodes.filter(n => n.data.severity === 'high').length} high</span>
           </div>
         </div>
         {/* Legend */}
         <div className="flex gap-6 mt-3 text-xs">
           <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded bg-red-500/20 border border-red-500/50" />
+            <div className="w-3 h-3 rounded bg-red-500/20 border border-red-500/40" />
             <span className="text-slate-400">Critical / Broken</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded bg-orange-500/20 border border-orange-500/50" />
+            <div className="w-3 h-3 rounded bg-amber-500/20 border border-amber-500/40" />
             <span className="text-slate-400">High / Deprecated</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded bg-yellow-500/20 border border-yellow-500/50" />
+            <div className="w-3 h-3 rounded bg-amber-500/10 border border-amber-500/30" />
             <span className="text-slate-400">Medium</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded bg-green-500/20 border border-green-500/50" />
+            <div className="w-3 h-3 rounded bg-emerald-500/20 border border-emerald-500/40" />
             <span className="text-slate-400">Acceptable / Strong</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded bg-slate-500/20 border border-slate-500/50" />
+            <div className="w-3 h-3 rounded bg-[#0e1726] border border-[#1e2d42]" />
             <span className="text-slate-400">Informational</span>
           </div>
         </div>
       </div>
 
       {/* Graph */}
-      <div className="flex-1">
+      <div className="flex-1 min-h-[500px]">
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -293,9 +294,9 @@ export default function CryptoMapPage() {
           defaultEdgeOptions={{ type: 'smoothstep' }}
           proOptions={{ hideAttribution: true }}
         >
-          <Background color="#1e293b" gap={20} size={1} />
+          <Background color="#152033" gap={24} size={1} />
           <Controls
-            className="!bg-slate-800 !border-slate-700 !rounded-lg !shadow-xl"
+            className="!bg-[#0e1726] !border-[#1e2d42] !rounded-lg !shadow-lg"
             showInteractive={false}
           />
           <MiniMap
@@ -303,16 +304,16 @@ export default function CryptoMapPage() {
               if (node.type === 'crypto') {
                 const severity = (node.data as Record<string, string>).severity;
                 const colors: Record<string, string> = {
-                  critical: '#ef4444', high: '#f97316', medium: '#eab308',
-                  low: '#3b82f6', informational: '#64748b',
+                  critical: '#ef4444', high: '#f59e0b', medium: '#f59e0b',
+                  low: '#2563eb', informational: '#64748b',
                 };
                 return colors[severity] || '#64748b';
               }
-              if (node.type === 'application') return '#3b82f6';
-              return '#334155';
+              if (node.type === 'application') return '#2563eb';
+              return '#1e2d42';
             }}
-            maskColor="rgba(15, 23, 42, 0.8)"
-            className="!bg-slate-900 !border-slate-700 !rounded-lg"
+            maskColor="rgba(7, 11, 20, 0.85)"
+            className="!bg-[#0e1726] !border-[#1e2d42] !rounded-lg"
           />
         </ReactFlow>
       </div>

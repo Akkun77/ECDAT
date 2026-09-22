@@ -21,12 +21,12 @@ export default function MigrationPage() {
   if (!isCompleted || !migration) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6">
-        <ArrowRight className="w-16 h-16 text-slate-600 mb-4" />
-        <h2 className="text-2xl font-bold text-slate-100 mb-2">No Migration Data Available</h2>
-        <p className="text-slate-400 mb-6 max-w-md">
+        <ArrowRight className="w-12 h-12 text-slate-600 mb-4" />
+        <h2 className="text-xl font-bold text-slate-100 mb-2">No Migration Data Available</h2>
+        <p className="text-slate-400 text-sm mb-6 max-w-md">
           Run a scan to generate prioritized post-quantum migration recommendations based on Mosca-style analysis.
         </p>
-        <Link href="/scan" className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-xl font-medium transition-colors">
+        <Link href="/scan" className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors border border-blue-400/30">
           Start Scanning
         </Link>
       </div>
@@ -41,31 +41,32 @@ export default function MigrationPage() {
     if (name.includes('Act Now')) return { border: 'border-red-500/30', bg: 'bg-red-500/10', text: 'text-red-400', badge: 'bg-red-500/20 text-red-300' };
     if (name.includes('Plan')) return { border: 'border-amber-500/30', bg: 'bg-amber-500/10', text: 'text-amber-400', badge: 'bg-amber-500/20 text-amber-300' };
     if (name.includes('Monitor')) return { border: 'border-blue-500/30', bg: 'bg-blue-500/10', text: 'text-blue-400', badge: 'bg-blue-500/20 text-blue-300' };
-    return { border: 'border-green-500/30', bg: 'bg-green-500/10', text: 'text-green-400', badge: 'bg-green-500/20 text-green-300' };
+    return { border: 'border-emerald-500/30', bg: 'bg-emerald-500/10', text: 'text-emerald-400', badge: 'bg-emerald-500/20 text-emerald-300' };
   };
 
   const getGroupIcon = (name: string) => {
-    if (name.includes('Act Now')) return <AlertTriangle className="w-5 h-5 text-red-400" />;
-    if (name.includes('Plan')) return <Clock className="w-5 h-5 text-amber-400" />;
-    if (name.includes('Monitor')) return <Activity className="w-5 h-5 text-blue-400" />;
-    return <CheckCircle2 className="w-5 h-5 text-green-400" />;
+    if (name.includes('Act Now')) return <AlertTriangle className="w-4 h-4 text-red-400" />;
+    if (name.includes('Plan')) return <Clock className="w-4 h-4 text-amber-400" />;
+    if (name.includes('Monitor')) return <Activity className="w-4 h-4 text-blue-400" />;
+    return <CheckCircle2 className="w-4 h-4 text-emerald-400" />;
   };
 
   return (
     <div className="max-w-7xl mx-auto space-y-6 p-6">
-      <div>
-        <h1 className="text-3xl font-bold text-slate-100 flex items-center gap-3">
-          <Clock className="w-8 h-8 text-blue-400" />
+      {/* Page Header */}
+      <div className="pb-2 border-b border-[#1e2d42]">
+        <h1 className="text-2xl font-bold text-slate-100 flex items-center gap-2.5">
+          <Clock className="w-6 h-6 text-blue-400 shrink-0" />
           Migration Roadmap
         </h1>
-        <p className="text-slate-400 mt-2">
+        <p className="text-slate-400 text-sm mt-1">
           Prioritized post-quantum migration planning based on Mosca&apos;s theorem and cryptographic risk.
         </p>
       </div>
 
       {/* Mosca Explanation Card */}
-      <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-5 flex gap-4 items-start">
-        <Info className="w-6 h-6 text-blue-400 flex-shrink-0 mt-0.5" />
+      <div className="bg-[#0e1726] border border-[#1e2d42] rounded-xl p-5 flex gap-4 items-start">
+        <Info className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
         <div className="space-y-1">
           <p className="text-sm font-semibold text-slate-200">
             Mosca-Style Migration Prioritization: <span className="font-mono text-blue-400 font-normal">Urgency = Data Lifetime (X) + Migration Time (Y) − Threat Horizon (Z)</span>
@@ -88,16 +89,16 @@ export default function MigrationPage() {
           const isExpanded = expandedGroups[group.name] ?? false;
 
           return (
-            <div key={group.name} className={`border ${style.border} rounded-xl overflow-hidden bg-slate-900/40 shadow-lg`}>
+            <div key={group.name} className={`border ${style.border} rounded-xl overflow-hidden bg-[#0e1726]`}>
               <button
                 onClick={() => toggleGroup(group.name)}
                 className={`w-full flex items-center justify-between p-4 ${style.bg} hover:brightness-110 transition-all`}
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-slate-900/60 border border-slate-700/50">
+                  <div className="p-1.5 rounded-lg bg-[#070b14] border border-[#1e2d42]">
                     {getGroupIcon(group.name)}
                   </div>
-                  <h2 className="text-lg font-bold text-slate-100">{group.name}</h2>
+                  <h2 className="text-base font-bold text-slate-100">{group.name}</h2>
                   <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${style.badge}`}>
                     {group.count} {group.count === 1 ? 'asset' : 'assets'}
                   </span>
@@ -110,7 +111,7 @@ export default function MigrationPage() {
               </button>
 
               {isExpanded && group.findings && group.findings.length > 0 && (
-                <div className="p-4 divide-y divide-slate-800/80">
+                <div className="p-4 divide-y divide-[#1e2d42]">
                   {group.findings.map((finding: FindingResponse) => {
                     const filePath = finding.file || finding.file_path || '';
                     const fileName = filePath.split(/[/\\]/).pop() || filePath;
@@ -134,7 +135,7 @@ export default function MigrationPage() {
                                 {finding.category === 'security_hygiene' ? 'Hardcoded Secret' : formatAlgorithm(algo)}
                               </span>
                               {finding.key_size && (
-                                <span className="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+                                <span className="text-xs font-mono px-2 py-0.5 rounded bg-[#152033] text-slate-300 border border-[#1e2d42]">
                                   {finding.key_size}-bit
                                 </span>
                               )}
@@ -177,37 +178,39 @@ export default function MigrationPage() {
 
                             {/* Snippet preview */}
                             {finding.code_snippet && (
-                              <pre className="text-xs font-mono text-slate-400 bg-slate-950/80 p-2.5 rounded border border-slate-800/80 overflow-x-auto">
+                              <pre className="text-xs font-mono text-slate-300 bg-[#070b14] p-2.5 rounded border border-[#1e2d42] overflow-x-auto">
                                 <code>{finding.code_snippet.trim()}</code>
                               </pre>
                             )}
                           </div>
 
                           <div className="space-y-2 min-w-0">
-                            <div className="bg-slate-800/60 border border-slate-600/70 rounded-xl p-4 min-w-0">
+                            {/* RISK card */}
+                            <div className="bg-[#152033] border border-[#1e2d42] rounded-xl p-4 min-w-0">
                               <div className="text-xs font-bold text-slate-300 uppercase tracking-widest mb-2">Risk</div>
                               <div className="flex flex-wrap gap-4 text-xs mb-2">
                                 <span className="text-slate-400">Current: <strong className={currentSecurityColor(currentSecurity)}>{formatCurrentSecurity(currentSecurity)}</strong></span>
                                 <span className="text-slate-400">Quantum: <strong className={quantumRiskColor(quantumStatus)}>{formatQuantumRisk(quantumStatus)}</strong></span>
                               </div>
-                              <p className="text-sm text-slate-200 break-words">{finding.reason}</p>
+                              <p className="text-xs text-slate-200 break-words leading-relaxed">{finding.reason}</p>
                             </div>
 
-                            <ArrowDown className="w-5 h-5 text-slate-500 mx-auto" aria-hidden="true" />
+                            <ArrowDown className="w-4 h-4 text-slate-600 mx-auto" aria-hidden="true" />
 
-                            <div className="bg-amber-950/25 border border-amber-500/40 rounded-xl p-4 min-w-0">
+                            {/* MITIGATE card */}
+                            <div className="bg-amber-950/20 border border-amber-500/30 rounded-xl p-4 min-w-0">
                               <div className="flex items-start gap-3 mb-2">
-                                <div className="p-1.5 rounded-lg bg-amber-500/15 border border-amber-500/25 shrink-0">
+                                <div className="p-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 shrink-0">
                                   <ListChecks className="w-4 h-4 text-amber-400" />
                                 </div>
                                 <div>
                                   <div className="text-xs font-bold text-amber-300 uppercase tracking-widest">Mitigate</div>
-                                  <p className="text-[11px] text-amber-200/50 mt-0.5">Reduce risk now while migration is prepared</p>
+                                  <p className="text-[11px] text-amber-200/60 mt-0.5">Reduce risk now while migration is prepared</p>
                                 </div>
                               </div>
                               {mitigation ? (
                                 <div className="pl-[40px] space-y-2">
-                                  <p className="text-sm font-semibold text-slate-100 break-words">{mitigation.immediate_action}</p>
+                                  <p className="text-xs font-semibold text-slate-100 break-words">{mitigation.immediate_action}</p>
                                   <ul className="space-y-0.5 text-xs text-slate-300 break-words">
                                     {mitigation.interim_controls.slice(0, 3).map((control, index) => (
                                       <li key={`${finding.id}-roadmap-control-${index}`} className="flex gap-2"><span className="text-amber-400/80">•</span><span>{control}</span></li>
@@ -224,23 +227,25 @@ export default function MigrationPage() {
 
                             <ArrowDown className="w-4 h-4 text-slate-600 mx-auto" aria-hidden="true" />
 
-                            <div className="bg-gradient-to-br from-blue-950/70 to-blue-900/30 border-2 border-blue-500/60 rounded-xl p-5 min-w-0 space-y-2 shadow-xl shadow-blue-950/20">
+                            {/* MIGRATE card */}
+                            <div className="bg-blue-950/20 border border-blue-500/40 rounded-xl p-4 min-w-0 space-y-2">
                               <div className="flex items-start gap-3">
-                                <div className="p-1.5 rounded-lg bg-blue-500/15 border border-blue-500/30 shrink-0">
+                                <div className="p-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 shrink-0">
                                   <ArrowRight className="w-4 h-4 text-blue-400" />
                                 </div>
                                 <div>
-                                  <div className="text-sm font-bold text-blue-300 uppercase tracking-widest">Migrate</div>
-                                  <p className="text-[11px] text-blue-200/50 mt-0.5">Target cryptographic state</p>
+                                  <div className="text-xs font-bold text-blue-300 uppercase tracking-widest">Migrate</div>
+                                  <p className="text-[11px] text-blue-200/60 mt-0.5">Target cryptographic state</p>
                                 </div>
                               </div>
-                              <p className="text-base font-bold text-slate-50 break-words pl-[40px]">{recommendation}</p>
-                              {notes && <p className="text-xs text-blue-100/60 break-words pl-[40px]">{notes}</p>}
+                              <p className="text-sm font-bold text-slate-100 break-words pl-[40px]">{recommendation}</p>
+                              {notes && <p className="text-xs text-slate-400 break-words pl-[40px]">{notes}</p>}
                             </div>
 
                             <ArrowDown className="w-4 h-4 text-slate-600 mx-auto" aria-hidden="true" />
 
-                            <div className="bg-emerald-950/20 border border-emerald-700/40 rounded-xl px-4 py-3 min-w-0 flex items-center gap-3">
+                            {/* VERIFY strip */}
+                            <div className="bg-emerald-950/20 border border-emerald-500/30 rounded-xl px-4 py-2.5 min-w-0 flex items-center gap-3">
                               <div className="p-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 shrink-0">
                                 <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                               </div>

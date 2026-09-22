@@ -98,13 +98,13 @@ export function formatOperation(op?: string | null): string {
   return map[op.toLowerCase()] || op;
 }
 
-// Color utilities for Tailwind classes
+// Color utilities for Tailwind classes following the approved semantic palette
 export function severityColor(severity?: string | null): string {
   if (!severity) return 'text-slate-400';
   const colors: Record<string, string> = {
     'critical': 'text-red-400',
-    'high': 'text-orange-400',
-    'medium': 'text-yellow-400',
+    'high': 'text-amber-400',
+    'medium': 'text-amber-400',
     'low': 'text-blue-400',
     'informational': 'text-slate-400',
   };
@@ -116,10 +116,10 @@ export const getSeverityColor = severityColor;
 export function severityBg(severity?: string | null): string {
   if (!severity) return 'bg-slate-500/10 text-slate-400 border-slate-500/20';
   const colors: Record<string, string> = {
-    'critical': 'bg-red-500/10 text-red-400 border-red-500/20',
-    'high': 'bg-orange-500/10 text-orange-400 border-orange-500/20',
-    'medium': 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
-    'low': 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+    'critical': 'bg-red-500/10 text-red-400 border-red-500/30',
+    'high': 'bg-amber-500/10 text-amber-400 border-amber-500/30',
+    'medium': 'bg-amber-500/10 text-amber-400 border-amber-500/30',
+    'low': 'bg-blue-500/10 text-blue-400 border-blue-500/30',
     'informational': 'bg-slate-500/10 text-slate-400 border-slate-500/20',
   };
   return colors[severity.toLowerCase()] || 'bg-slate-500/10 text-slate-400 border-slate-500/20';
@@ -129,10 +129,10 @@ export function currentSecurityColor(status?: string | null): string {
   if (!status) return 'text-slate-400';
   const colors: Record<string, string> = {
     'broken': 'text-red-400',
-    'deprecated': 'text-orange-400',
-    'acceptable': 'text-green-400',
+    'deprecated': 'text-amber-400',
+    'acceptable': 'text-emerald-400',
     'strong': 'text-emerald-400',
-    'review_required': 'text-yellow-400',
+    'review_required': 'text-amber-400',
   };
   return colors[status.toLowerCase()] || 'text-slate-400';
 }
@@ -142,23 +142,23 @@ export function quantumRiskColor(status?: string | null): string {
   const colors: Record<string, string> = {
     'vulnerable': 'text-red-400',
     'migration_concern': 'text-amber-400',
-    'low_concern': 'text-green-400',
+    'low_concern': 'text-emerald-400',
     'not_applicable': 'text-slate-500',
-    'review_required': 'text-yellow-400',
+    'review_required': 'text-amber-400',
   };
   return colors[status.toLowerCase()] || 'text-slate-400';
 }
 
 export function moscaColor(label?: string | null): string {
-  if (!label) return 'text-green-400';
+  if (!label) return 'text-emerald-400';
   if (label === 'ACT_NOW') return 'text-red-400';
   if (label === 'PLAN_NOW') return 'text-amber-400';
-  return 'text-green-400';
+  return 'text-emerald-400';
 }
 
 export function moscaBg(label?: string | null): string {
-  if (!label) return 'bg-green-500/10 border-green-500/20';
-  if (label === 'ACT_NOW') return 'bg-red-500/10 border-red-500/20';
-  if (label === 'PLAN_NOW') return 'bg-amber-500/10 border-amber-500/20';
-  return 'bg-green-500/10 border-green-500/20';
+  if (!label) return 'bg-emerald-500/10 border-emerald-500/20';
+  if (label === 'ACT_NOW') return 'bg-red-500/10 border-red-500/30';
+  if (label === 'PLAN_NOW') return 'bg-amber-500/10 border-amber-500/30';
+  return 'bg-emerald-500/10 border-emerald-500/20';
 }
