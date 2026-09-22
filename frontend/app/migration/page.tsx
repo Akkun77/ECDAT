@@ -195,44 +195,59 @@ export default function MigrationPage() {
 
                             <ArrowDown className="w-5 h-5 text-slate-500 mx-auto" aria-hidden="true" />
 
-                            <div className="bg-amber-950/25 border border-amber-500/50 rounded-xl p-4 min-w-0">
-                              <div className="text-xs font-bold text-amber-300 uppercase tracking-widest flex items-center gap-2 mb-2">
-                                <ListChecks className="w-4 h-4" /> Mitigate
+                            <div className="bg-amber-950/25 border border-amber-500/40 rounded-xl p-4 min-w-0">
+                              <div className="flex items-start gap-3 mb-2">
+                                <div className="p-1.5 rounded-lg bg-amber-500/15 border border-amber-500/25 shrink-0">
+                                  <ListChecks className="w-4 h-4 text-amber-400" />
+                                </div>
+                                <div>
+                                  <div className="text-xs font-bold text-amber-300 uppercase tracking-widest">Mitigate</div>
+                                  <p className="text-[11px] text-amber-200/50 mt-0.5">Reduce risk now while migration is prepared</p>
+                                </div>
                               </div>
                               {mitigation ? (
-                                <>
+                                <div className="pl-[40px] space-y-2">
                                   <p className="text-sm font-semibold text-slate-100 break-words">{mitigation.immediate_action}</p>
-                                  <ul className="mt-2 space-y-1 text-xs text-slate-300 break-words">
-                                    {mitigation.interim_controls.map((control, index) => (
-                                      <li key={`${finding.id}-roadmap-control-${index}`} className="flex gap-2"><span className="text-amber-400">•</span><span>{control}</span></li>
+                                  <ul className="space-y-0.5 text-xs text-slate-300 break-words">
+                                    {mitigation.interim_controls.slice(0, 3).map((control, index) => (
+                                      <li key={`${finding.id}-roadmap-control-${index}`} className="flex gap-2"><span className="text-amber-400/80">•</span><span>{control}</span></li>
                                     ))}
-                                    <li className="flex gap-2"><span className="text-amber-400">•</span><span>{mitigation.migration_dependency}</span></li>
                                   </ul>
-                                </>
+                                  {mitigation.implementation_caution && (
+                                    <p className="text-[11px] text-slate-500 break-words">{mitigation.implementation_caution}</p>
+                                  )}
+                                </div>
                               ) : (
-                                <p className="text-xs text-slate-500">No structured mitigation is available for this saved finding.</p>
+                                <p className="text-xs text-slate-500 pl-[40px]">No structured mitigation is available for this saved finding.</p>
                               )}
                             </div>
 
-                            <ArrowDown className="w-5 h-5 text-slate-500 mx-auto" aria-hidden="true" />
+                            <ArrowDown className="w-4 h-4 text-slate-600 mx-auto" aria-hidden="true" />
 
-                            <div className="bg-gradient-to-br from-blue-950/70 to-blue-900/30 border-2 border-blue-500/70 rounded-xl p-5 min-w-0 space-y-2 shadow-lg shadow-blue-950/20">
-                              <div className="text-sm font-bold text-blue-300 uppercase tracking-widest flex items-center gap-2">
-                                <ArrowRight className="w-4 h-4" /> Migrate
+                            <div className="bg-gradient-to-br from-blue-950/70 to-blue-900/30 border-2 border-blue-500/60 rounded-xl p-5 min-w-0 space-y-2 shadow-xl shadow-blue-950/20">
+                              <div className="flex items-start gap-3">
+                                <div className="p-1.5 rounded-lg bg-blue-500/15 border border-blue-500/30 shrink-0">
+                                  <ArrowRight className="w-4 h-4 text-blue-400" />
+                                </div>
+                                <div>
+                                  <div className="text-sm font-bold text-blue-300 uppercase tracking-widest">Migrate</div>
+                                  <p className="text-[11px] text-blue-200/50 mt-0.5">Target cryptographic state</p>
+                                </div>
                               </div>
-                              <p className="text-base font-bold text-slate-50 break-words">{recommendation}</p>
-                              {notes && <p className="text-xs text-blue-100/60 break-words">{notes}</p>}
+                              <p className="text-base font-bold text-slate-50 break-words pl-[40px]">{recommendation}</p>
+                              {notes && <p className="text-xs text-blue-100/60 break-words pl-[40px]">{notes}</p>}
                             </div>
 
-                            <ArrowDown className="w-5 h-5 text-slate-500 mx-auto" aria-hidden="true" />
+                            <ArrowDown className="w-4 h-4 text-slate-600 mx-auto" aria-hidden="true" />
 
-                            <div className="bg-emerald-950/20 border border-emerald-700/50 rounded-xl p-4 min-w-0">
-                              <div className="text-xs font-bold text-emerald-300 uppercase tracking-widest flex items-center gap-2 mb-1">
-                                <CheckCircle2 className="w-4 h-4" /> Verify
+                            <div className="bg-emerald-950/20 border border-emerald-700/40 rounded-xl px-4 py-3 min-w-0 flex items-center gap-3">
+                              <div className="p-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 shrink-0">
+                                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                               </div>
-                              <p className="text-sm text-slate-200 break-words">
-                                {mitigation?.validation_step || 'Validate the approved change and re-scan.'}
-                              </p>
+                              <div>
+                                <span className="text-xs font-bold text-emerald-300 uppercase tracking-widest">Verify</span>
+                                <span className="text-xs text-slate-400 ml-2">Re-scan repository after remediation</span>
+                              </div>
                             </div>
                           </div>
                         </div>

@@ -15,11 +15,11 @@ function MetricCard({ value, label, accent }: { value: string | number; label: s
   );
 }
 
-function FeatureCard({ icon: Icon, title, description, href }: { icon: React.ElementType; title: string; description: string; href: string }) {
+function FeatureCard({ icon: Icon, title, description, href, accent }: { icon: React.ElementType; title: string; description: string; href: string; accent?: string }) {
   return (
-    <Link href={href} className="group bg-slate-800/30 border border-slate-700/40 rounded-xl p-6 hover:bg-slate-800/60 hover:border-slate-600/60 transition-all duration-200">
+    <Link href={href} className={`group bg-slate-800/30 border rounded-xl p-6 hover:bg-slate-800/60 transition-all duration-200 ${accent || 'border-slate-700/40 hover:border-slate-600/60'}`}>
       <div className="flex items-start gap-4">
-        <div className="p-2.5 rounded-lg bg-blue-500/10 text-blue-400 group-hover:bg-blue-500/20 transition-colors">
+        <div className={`p-2.5 rounded-lg transition-colors ${accent ? 'bg-blue-500/15 text-blue-400 group-hover:bg-blue-500/25' : 'bg-blue-500/10 text-blue-400 group-hover:bg-blue-500/20'}`}>
           <Icon className="w-5 h-5" />
         </div>
         <div className="flex-1 min-w-0">
@@ -364,7 +364,7 @@ export default function OverviewPage() {
           <FeatureCard
             icon={ListChecks}
             title="Mitigate"
-            description="Reduce immediate exposure before migration."
+            description="Reduce immediate exposure while migration is prepared."
             href="/migration"
           />
           <FeatureCard
@@ -372,6 +372,7 @@ export default function OverviewPage() {
             title="Migrate"
             description="Move to the target cryptographic state."
             href="/migration"
+            accent="border-blue-500/30 hover:border-blue-500/50"
           />
         </div>
       </section>
