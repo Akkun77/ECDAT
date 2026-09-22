@@ -510,7 +510,7 @@ export default function OverviewPage() {
             icon={ListChecks}
             title="Mitigate"
             description="Reduce immediate exposure while migration is prepared."
-            href="/migration"
+            href="/mitigation"
             accent="border-amber-500/40 bg-amber-950/15"
           />
           <FeatureCard

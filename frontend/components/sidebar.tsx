@@ -10,6 +10,7 @@ import {
   AlertTriangle, 
   FileText, 
   Network, 
+  ListChecks,
   ArrowRightLeft, 
   Download,
   Loader2
@@ -22,6 +23,7 @@ const navItems = [
   { name: 'Findings', href: '/findings', icon: AlertTriangle },
   { name: 'CBOM', href: '/cbom', icon: FileText },
   { name: 'Crypto Map', href: '/crypto-map', icon: Network },
+  { name: 'Mitigation Hub', href: '/mitigation', icon: ListChecks },
   { name: 'Migration Plan', href: '/migration', icon: ArrowRightLeft },
   { name: 'Reports', href: '/reports', icon: Download },
 ];
