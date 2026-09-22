@@ -14,7 +14,26 @@ export default function ReportsPage() {
   if (!isCompleted || !scanId) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6">
-        <Download className="w-12 h-12 text-slate-600 mb-4" />
+        <div className="relative w-48 h-32 mb-8 flex justify-center items-center">
+          {/* Document 1 */}
+          <div className="absolute top-2 left-6 w-16 h-20 bg-[#0e1726] border border-[#1e2d42] rounded shadow-lg flex flex-col p-2 gap-1.5 opacity-60 -rotate-6">
+            <div className="w-1/2 h-1.5 bg-[#1e2d42] rounded-full" />
+            <div className="w-full h-1 bg-[#1e2d42] rounded-full" />
+            <div className="w-3/4 h-1 bg-[#1e2d42] rounded-full" />
+            <div className="w-full h-1 bg-[#1e2d42] rounded-full mt-2" />
+          </div>
+          {/* Document 2 */}
+          <div className="absolute top-6 right-8 w-16 h-20 bg-[#0e1726] border border-[#1e2d42] rounded shadow-lg flex flex-col p-2 gap-1.5 opacity-80 rotate-6">
+            <div className="w-1/2 h-1.5 bg-[#1e2d42] rounded-full" />
+            <div className="w-full h-1 bg-[#1e2d42] rounded-full" />
+            <div className="w-3/4 h-1 bg-[#1e2d42] rounded-full" />
+            <div className="w-4/5 h-1 bg-[#1e2d42] rounded-full mt-2" />
+          </div>
+          {/* Main Download Icon Overlay */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-3 bg-[#070b14] border border-[#1e2d42] rounded-xl shadow-2xl z-10">
+            <Download className="w-6 h-6 text-blue-400" />
+          </div>
+        </div>
         <h2 className="text-xl font-bold text-slate-100 mb-2">No Reports Available</h2>
         <p className="text-slate-400 text-sm mb-6 max-w-md">
           Complete a repository scan first to access cryptographic reports, CBOM exports, and migration roadmaps.

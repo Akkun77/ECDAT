@@ -2,7 +2,7 @@
 
 import { useScanContext } from '@/components/scan-provider';
 import { formatAlgorithm, severityBg, currentSecurityColor, quantumRiskColor, moscaColor, moscaBg } from '@/lib/display';
-import { Shield, Search, BarChart3, ArrowRightLeft, FileText, Network, ChevronRight, Zap, Eye, Target, Route, ListChecks, Boxes } from 'lucide-react';
+import { Shield, Search, BarChart3, ArrowRightLeft, FileText, Network, ChevronRight, Zap, Eye, Target, Route, ListChecks, Boxes, FolderOpen } from 'lucide-react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
 
@@ -198,9 +198,10 @@ function LiveCryptoFootprint() {
   components.forEach((c: any) => {
     // We don't have language directly on cbom component, use source file extension
     const ext = c.source_file ? c.source_file.split('.').pop()?.toLowerCase() : 'unknown';
-    const lang = {
+    const extMap: Record<string, string> = {
       'py': 'Python', 'js': 'JavaScript', 'ts': 'TypeScript', 'java': 'Java', 'go': 'Go', 'c': 'C/C++', 'cpp': 'C/C++'
-    }[ext || 'unknown'] || 'Other';
+    };
+    const lang = extMap[ext || 'unknown'] || 'Other';
     
     if (c.category === 'security_hygiene') return;
     
@@ -529,7 +530,7 @@ export default function OverviewPage() {
       {hasResults && <MigrationReadinessSection />}
 
       {/* CBOM Preview */}
-      {hasResults && <CBOMPreviewSection />}
+      {hasResults && <LiveCryptoFootprint />}
 
       {/* Crypto Map Preview */}
       {hasResults && <CryptoMapPreview />}
