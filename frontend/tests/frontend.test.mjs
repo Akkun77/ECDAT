@@ -159,3 +159,54 @@ test('31. guidance cards guard long text from overflow', () => {
   assert.match(migrationPage, /break-words/);
   assert.match(migrationPage, /min-w-0/);
 });
+
+// Focused Mitigation Hub Tests
+import { getStatusLabel, getMitigationSummaryLine } from '../components/interactive-mitigation.tsx';
+
+test('32. getStatusLabel derives IMMEDIATE for MD5 / broken algorithms', () => {
+  const status = getStatusLabel('md5', 'broken', 'not_applicable', 'cryptographic');
+  assert.equal(status.label, 'IMMEDIATE');
+});
+
+test('33. getStatusLabel derives PLAN for RSA / quantum-vulnerable algorithms', () => {
+  const status = getStatusLabel('rsa', 'acceptable', 'vulnerable', 'cryptographic');
+  assert.equal(status.label, 'PLAN');
+});
+
+test('34. getStatusLabel derives RETAIN for AES-256-GCM', () => {
+  const status = getStatusLabel('aes-gcm', 'strong', 'low_concern', 'cryptographic');
+  assert.equal(status.label, 'RETAIN');
+});
+
+test('35. getMitigationSummaryLine produces concise summary for MD5 and RSA', () => {
+  assert.equal(
+    getMitigationSummaryLine('md5', 'broken', 'not_applicable', null),
+    'Stop security-sensitive MD5 use immediately.'
+  );
+  assert.equal(
+    getMitigationSummaryLine('rsa', 'acceptable', 'vulnerable', 2048),
+    'Reduce future migration exposure while compatibility planning begins.'
+  );
+  assert.equal(
+    getMitigationSummaryLine('aes-256-gcm', 'strong', 'low_concern', 256),
+    'Validate implementation controls; no cryptographic replacement required.'
+  );
+});
+
+const sidebarFile = readFileSync(new URL('../components/sidebar.tsx', import.meta.url), 'utf8');
+const mitigationHubPage = readFileSync(new URL('../app/mitigation/page.tsx', import.meta.url), 'utf8');
+
+test('36. sidebar navigation includes Mitigation Hub between Crypto Map and Migration Plan', () => {
+  const cryptoMapIdx = sidebarFile.indexOf("href: '/crypto-map'");
+  const mitigationIdx = sidebarFile.indexOf("href: '/mitigation'");
+  const migrationIdx = sidebarFile.indexOf("href: '/migration'");
+  assert.ok(cryptoMapIdx >= 0 && mitigationIdx > cryptoMapIdx && migrationIdx > mitigationIdx);
+});
+
+test('37. mitigation hub page includes metric cards, filters, and distinction explanation', () => {
+  assert.match(mitigationHubPage, /Mitigation Hub/);
+  assert.match(mitigationHubPage, /Understanding Mitigation vs\. Migration/);
+  assert.match(mitigationHubPage, /Immediate Actions/);
+  assert.match(mitigationHubPage, /InteractiveMitigation/);
+});
+
