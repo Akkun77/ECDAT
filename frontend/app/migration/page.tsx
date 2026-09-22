@@ -21,7 +21,31 @@ export default function MigrationPage() {
   if (!isCompleted || !migration) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6">
-        <ArrowRight className="w-12 h-12 text-slate-600 mb-4" />
+        <div className="relative w-64 h-32 mb-8 flex items-center justify-between">
+          {/* Risk Node */}
+          <div className="w-20 h-16 bg-[#0e1726] border border-red-500/30 rounded-lg flex flex-col items-center justify-center gap-1 opacity-70">
+            <Shield className="w-4 h-4 text-red-400" />
+            <div className="w-8 h-1 bg-red-500/20 rounded-full" />
+          </div>
+          
+          {/* Arrow */}
+          <div className="flex-1 flex items-center px-2">
+            <div className="w-full h-[1px] bg-gradient-to-r from-red-500/30 via-[#1e2d42] to-emerald-500/30 relative">
+              <div className="absolute right-0 -top-1 w-2 h-2 border-t border-r border-emerald-500/50 rotate-45" />
+            </div>
+          </div>
+          
+          {/* Target Node */}
+          <div className="w-20 h-16 bg-[#0e1726] border border-emerald-500/30 rounded-lg flex flex-col items-center justify-center gap-1 opacity-70">
+            <Shield className="w-4 h-4 text-emerald-400" />
+            <div className="w-8 h-1 bg-emerald-500/20 rounded-full" />
+          </div>
+          
+          {/* Central Overlay */}
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 p-2 bg-[#070b14] border border-[#1e2d42] rounded-lg">
+            <Clock className="w-5 h-5 text-amber-400" />
+          </div>
+        </div>
         <h2 className="text-xl font-bold text-slate-100 mb-2">No Migration Data Available</h2>
         <p className="text-slate-400 text-sm mb-6 max-w-md">
           Run a scan to generate prioritized post-quantum migration recommendations based on Mosca-style analysis.

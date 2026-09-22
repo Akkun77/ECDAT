@@ -18,7 +18,24 @@ export default function CBOMPage() {
   if (!isCompleted || !cbom) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6">
-        <FileText className="w-12 h-12 text-slate-600 mb-4" />
+        <div className="relative w-48 h-32 mb-8 flex flex-col gap-2">
+          {/* Wireframe Table Schematic */}
+          <div className="w-full h-6 bg-[#0e1726] border border-[#1e2d42] rounded flex gap-2 p-1">
+            <div className="h-full w-1/4 bg-[#1e2d42]/50 rounded-sm" />
+            <div className="h-full w-1/4 bg-[#1e2d42]/50 rounded-sm" />
+            <div className="h-full w-1/2 bg-[#1e2d42]/50 rounded-sm" />
+          </div>
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="w-full h-5 border-b border-[#1e2d42]/40 flex gap-2 p-1 opacity-60">
+              <div className="h-full w-1/4 bg-[#1e2d42]/30 rounded-sm" />
+              <div className="h-full w-1/4 bg-[#1e2d42]/30 rounded-sm" />
+              <div className="h-full w-1/2 bg-[#1e2d42]/20 rounded-sm" />
+            </div>
+          ))}
+          <div className="absolute -bottom-2 -right-2 p-2 bg-[#070b14] border border-[#1e2d42] rounded-lg">
+            <FileText className="w-5 h-5 text-teal-400" />
+          </div>
+        </div>
         <h2 className="text-xl font-bold text-slate-100 mb-2">No CBOM Data Available</h2>
         <p className="text-slate-400 text-sm mb-6 max-w-md">
           Run a repository scan to generate the Cryptographic Bill of Materials (CBOM) inventory for your software.

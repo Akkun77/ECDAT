@@ -127,32 +127,57 @@ function MigrationReadinessSection() {
   const { migration } = useScanContext();
   if (!migration) return null;
 
-  const groupStyles: Record<string, { color: string; bg: string }> = {
-    'Act Now': { color: 'text-red-400', bg: 'bg-red-500/10 border-red-500/30' },
-    'Plan Migration': { color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/30' },
-    'Monitor': { color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/30' },
-    'No Urgent Action': { color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/30' },
+  const total = migration.groups.reduce((acc, g) => acc + g.count, 0);
+
+  const groupStyles: Record<string, { color: string; bg: string; fill: string }> = {
+    'Act Now': { color: 'text-red-400', bg: 'bg-red-500/10 border-red-500/30', fill: 'bg-red-500' },
+    'Plan Migration': { color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/30', fill: 'bg-amber-500' },
+    'Monitor': { color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/30', fill: 'bg-blue-500' },
+    'No Urgent Action': { color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/30', fill: 'bg-emerald-500' },
   };
 
   return (
     <section className="mb-10">
       <div className="text-center mb-6">
-        <h2 className="text-xl font-bold text-slate-100 mb-1">Migration Readiness Tiers</h2>
+        <h2 className="text-xl font-bold text-slate-100 mb-1">Migration Readiness Timeline</h2>
         <p className="text-xs text-slate-400 max-w-xl mx-auto">
           ECDAT combines technical risk with Mosca-style migration urgency to prioritize remediation.
         </p>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-        {migration.groups.map(group => {
-          const style = groupStyles[group.name] || groupStyles['Monitor'];
-          return (
-            <div key={group.name} className={`border rounded-xl p-4 text-center ${style.bg}`}>
-              <div className={`text-2xl font-bold mb-0.5 ${style.color}`}>{group.count}</div>
-              <div className="text-xs text-slate-300 font-semibold">{group.name}</div>
-            </div>
-          );
-        })}
+      
+      <div className="bg-[#0e1726] border border-[#1e2d42] rounded-xl p-6 mb-4">
+        {/* Horizontal Stacked Bar */}
+        <div className="w-full h-3 flex rounded-full overflow-hidden mb-6 bg-[#070b14] border border-[#1e2d42]">
+          {migration.groups.map(group => {
+            const style = groupStyles[group.name] || groupStyles['Monitor'];
+            const percent = total > 0 ? (group.count / total) * 100 : 0;
+            if (percent === 0) return null;
+            return (
+              <div 
+                key={`${group.name}-bar`} 
+                style={{ width: `${percent}%` }} 
+                className={`${style.fill} h-full transition-all duration-500 hover:brightness-125`}
+                title={`${group.name}: ${group.count}`}
+              />
+            );
+          })}
+        </div>
+
+        {/* Legend / Metrics */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {migration.groups.map(group => {
+            const style = groupStyles[group.name] || groupStyles['Monitor'];
+            return (
+              <div key={group.name} className="flex flex-col items-center">
+                <div className={`w-3 h-3 rounded-full mb-2 ${style.fill}`} />
+                <div className={`text-xl font-bold mb-0.5 ${style.color}`}>{group.count}</div>
+                <div className="text-[11px] text-slate-300 font-semibold uppercase tracking-wider">{group.name}</div>
+              </div>
+            );
+          })}
+        </div>
       </div>
+      
       <div className="bg-[#0e1726] border border-[#1e2d42] rounded-lg p-3 text-center">
         <p className="text-[11px] text-slate-400">
           Migration urgency formula: <span className="font-mono text-blue-400">Urgency = Data Lifetime (X) + Migration Time (Y) − Threat Horizon (Z)</span>. Demo values are configured planning assumptions.
