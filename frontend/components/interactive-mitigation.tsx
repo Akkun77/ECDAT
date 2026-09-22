@@ -16,6 +16,7 @@ import {
   RotateCcw
 } from 'lucide-react';
 import type { MitigationGuidance } from '@/types/api';
+import { getStatusLabel, getMitigationSummaryLine } from '@/lib/display';
 
 export interface InteractiveMitigationProps {
   findingId: string;
@@ -31,89 +32,7 @@ export interface InteractiveMitigationProps {
   reason?: string | null;
 }
 
-// 1. Semantic Status Badge helper
-export function getStatusLabel(
-  algorithm?: string | null,
-  currentSecurity?: string | null,
-  quantumStatus?: string | null,
-  category?: string | null
-): { label: 'IMMEDIATE' | 'PLAN' | 'VALIDATE' | 'RETAIN'; color: string; bg: string; border: string } {
-  const algo = (algorithm || '').toLowerCase().replace(/[-_\s]+/g, '');
-  const cs = (currentSecurity || '').toLowerCase();
-  const qs = (quantumStatus || '').toLowerCase();
 
-  if (category === 'security_hygiene' || algo.includes('secret') || cs === 'broken' || ['md5', 'sha1', 'des', '3des', 'rc4'].includes(algo)) {
-    return {
-      label: 'IMMEDIATE',
-      color: 'text-red-400',
-      bg: 'bg-red-500/10',
-      border: 'border-red-500/30'
-    };
-  }
-
-  if (qs === 'vulnerable' || qs === 'migration_concern' || ['rsa', 'ecdsa', 'ecc'].includes(algo)) {
-    return {
-      label: 'PLAN',
-      color: 'text-amber-400',
-      bg: 'bg-amber-500/10',
-      border: 'border-amber-500/30'
-    };
-  }
-
-  if (algo.includes('aes') && (cs === 'strong' || cs === 'acceptable') && (qs === 'low_concern' || qs === 'not_applicable')) {
-    return {
-      label: 'RETAIN',
-      color: 'text-emerald-400',
-      bg: 'bg-emerald-500/10',
-      border: 'border-emerald-500/30'
-    };
-  }
-
-  return {
-    label: 'VALIDATE',
-    color: 'text-blue-400',
-    bg: 'bg-blue-500/10',
-    border: 'border-blue-500/30'
-  };
-}
-
-// 2. Summary Line helper
-export function getMitigationSummaryLine(
-  algorithm?: string | null,
-  currentSecurity?: string | null,
-  quantumStatus?: string | null,
-  keySize?: number | null,
-  defaultAction?: string | null
-): string {
-  const algo = (algorithm || '').toLowerCase();
-  const cs = (currentSecurity || '').toLowerCase();
-
-  if (algo === 'md5') {
-    return 'Stop security-sensitive MD5 use immediately.';
-  }
-  if (algo === 'sha1' || algo === 'sha-1') {
-    return 'Stop introducing new security-sensitive SHA-1 usage.';
-  }
-  if (algo.includes('rsa') && keySize && keySize < 2048) {
-    return 'Treat weak RSA key size as an immediate current-security priority.';
-  }
-  if (algo.includes('rsa')) {
-    return 'Reduce future migration exposure while compatibility planning begins.';
-  }
-  if (algo.includes('ecdsa') || algo.includes('ecc')) {
-    return 'Plan post-quantum migration for public-key elliptic curve dependencies.';
-  }
-  if (algo.includes('aes') && keySize === 256) {
-    return 'Validate implementation controls; no cryptographic replacement required.';
-  }
-  if (algo.includes('des') || algo.includes('3des') || cs === 'broken') {
-    return 'Stop deprecated algorithm usage and isolate dependent legacy systems.';
-  }
-  if (defaultAction) {
-    return defaultAction;
-  }
-  return 'Apply interim controls while long-term post-quantum migration is prepared.';
-}
 
 export default function InteractiveMitigation({
   findingId,

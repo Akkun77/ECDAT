@@ -139,29 +139,25 @@ test('28. moscaColor assigns distinct color classes based on urgency tier', () =
 const findingsPage = readFileSync(new URL('../app/findings/page.tsx', import.meta.url), 'utf8');
 const migrationPage = readFileSync(new URL('../app/migration/page.tsx', import.meta.url), 'utf8');
 
-test('29. finding details render mitigation before migration', () => {
-  const mitigation = findingsPage.indexOf('Mitigation Guidance');
-  const migration = findingsPage.indexOf('Migration — Target Cryptographic State');
-  assert.ok(mitigation >= 0 && migration > mitigation);
-  assert.match(findingsPage, /mitigation && \(/);
+test('29. finding details render InteractiveMitigation component', () => {
+  assert.match(findingsPage, /<InteractiveMitigation/);
 });
 
-test('30. migration roadmap keeps mitigation and migration visible', () => {
-  assert.match(migrationPage, /> Mitigate/);
-  assert.match(migrationPage, /> Migrate/);
-  assert.match(migrationPage, /mitigation \? \(/);
-  assert.match(migrationPage, /No structured mitigation is available/);
+test('30. migration roadmap renders InteractiveMitigation keeping mitigation and migration visible', () => {
+  assert.match(migrationPage, /<InteractiveMitigation/);
+  assert.match(interactiveMitigationFile, />Mitigate</);
+  assert.match(interactiveMitigationFile, />Migrate</);
 });
+
+const interactiveMitigationFile = readFileSync(new URL('../components/interactive-mitigation.tsx', import.meta.url), 'utf8');
 
 test('31. guidance cards guard long text from overflow', () => {
-  assert.match(findingsPage, /break-words/);
-  assert.match(findingsPage, /min-w-0/);
-  assert.match(migrationPage, /break-words/);
-  assert.match(migrationPage, /min-w-0/);
+  assert.match(interactiveMitigationFile, /break-words/);
+  assert.match(interactiveMitigationFile, /min-w-0/);
 });
 
 // Focused Mitigation Hub Tests
-import { getStatusLabel, getMitigationSummaryLine } from '../components/interactive-mitigation.tsx';
+import { getStatusLabel, getMitigationSummaryLine } from '../lib/display.ts';
 
 test('32. getStatusLabel derives IMMEDIATE for MD5 / broken algorithms', () => {
   const status = getStatusLabel('md5', 'broken', 'not_applicable', 'cryptographic');
