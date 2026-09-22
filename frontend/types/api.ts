@@ -57,6 +57,15 @@ export interface MigrationRecommendation {
   urgency: string;
   migration_notes: string;
   mosca: MoscaScore | null;
+  mitigation?: MitigationGuidance | null;
+}
+
+export interface MitigationGuidance {
+  immediate_action: string;
+  interim_controls: string[];
+  migration_dependency: string;
+  implementation_caution: string;
+  validation_step: string;
 }
 
 // Finding response (the main data type)

@@ -97,13 +97,17 @@ def test_real_api_end_to_end(client):
     for f in findings:
         assert f["code_snippet"].splitlines()[0].strip() == (DEMO / f["file"]).read_text().splitlines()[f["line"]-1].strip()
         assert f["policy_rule_id"] and f["policy_source"] and f["migration_recommendation"]
+        mitigation = f["migration_recommendation"]["mitigation"]
+        assert mitigation["immediate_action"] and mitigation["interim_controls"] and mitigation["validation_step"]
     md5 = next(f for f in findings if f["algorithm"].lower() == "md5")
     rsa = next(f for f in findings if f["algorithm"] == "RSA" and f["key_size"] == 2048 and f["operation_type"] == "signature")
     aes = next(f for f in findings if f["algorithm"] == "AES" and f["key_size"] == 256 and f["mode"] == "GCM")
     assert md5["current_security"] == "broken"
+    assert "Immediate remediation" in md5["migration_recommendation"]["mitigation"]["immediate_action"]
     assert rsa["current_security"] == "acceptable" and rsa["quantum_status"] == "vulnerable"
     assert "ML-DSA" in rsa["migration_recommendation"]["suggested_direction"] and rsa["mosca"]["is_demo_assumption"]
     assert aes["current_security"] == "strong" and aes["quantum_status"] == "low_concern"
+    assert "No urgent cryptographic replacement" in aes["migration_recommendation"]["mitigation"]["immediate_action"]
     assert client.get(f"/api/findings/{scan_id}/{rsa['id']}").json() == rsa
     assert client.get(f"/api/findings/{scan_id}?limit=1&offset=1").json()["findings"] == findings[1:2]
     assert sum(g["count"] for g in migration["groups"]) == len(findings)

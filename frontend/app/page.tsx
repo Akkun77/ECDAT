@@ -2,7 +2,7 @@
 
 import { useScanContext } from '@/components/scan-provider';
 import { formatAlgorithm, severityBg, currentSecurityColor, quantumRiskColor, moscaColor, moscaBg } from '@/lib/display';
-import { Shield, Search, BarChart3, ArrowRightLeft, FileText, Network, ChevronRight, Zap, Eye, Target, Route } from 'lucide-react';
+import { Shield, Search, BarChart3, ArrowRightLeft, FileText, Network, ChevronRight, Zap, Eye, Target, Route, ListChecks, Boxes } from 'lucide-react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
 
@@ -336,12 +336,18 @@ export default function OverviewPage() {
 
       {/* Feature Cards */}
       <section className="mb-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <FeatureCard
             icon={Eye}
             title="Discover"
             description="Find algorithms, libraries, key sizes and call sites directly in source code."
             href="/findings"
+          />
+          <FeatureCard
+            icon={Boxes}
+            title="Inventory"
+            description="Build a structured cryptographic bill of materials from discovered evidence."
+            href="/cbom"
           />
           <FeatureCard
             icon={Target}
@@ -356,9 +362,15 @@ export default function OverviewPage() {
             href="/migration"
           />
           <FeatureCard
+            icon={ListChecks}
+            title="Mitigate"
+            description="Reduce exposure with practical interim controls while migration is prepared."
+            href="/migration"
+          />
+          <FeatureCard
             icon={ArrowRightLeft}
             title="Migrate"
-            description="Generate operation-aware post-quantum migration recommendations."
+            description="Move toward the operation-appropriate target cryptographic state."
             href="/migration"
           />
         </div>

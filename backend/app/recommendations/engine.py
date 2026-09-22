@@ -3,6 +3,7 @@ from app.core.models import (
 )
 from app.risk.engine import RiskEngine
 from app.recommendations.mosca import calculate_mosca_score
+from app.recommendations.mitigation import build_mitigation
 
 
 class RecommendationEngine:
@@ -29,6 +30,7 @@ class RecommendationEngine:
             candidate = {"ACT_NOW": MigrationPriority.IMMEDIATE, "PLAN_NOW": MigrationPriority.HIGH,
                          "MONITOR": MigrationPriority.PLANNED}[mosca.urgency_label]
             urgency = max((urgency, candidate), key=rank.get)
+        mitigation = build_mitigation(finding, risk, urgency, mosca.urgency_label if mosca else None)
         explanation = risk.reason
         if mosca:
             explanation += " " + mosca.explanation + f" Overall migration priority={urgency.value}; current-security urgency is retained."
@@ -37,5 +39,5 @@ class RecommendationEngine:
             detected_algorithm=finding.algorithm, operation_type=finding.operation_type,
             why_action_needed=explanation, suggested_direction=risk.recommendation,
             urgency=urgency, migration_notes="Validate configuration and protocol compatibility before migration.",
-            mosca=mosca)
+            mosca=mosca, mitigation=mitigation)
 

@@ -116,6 +116,13 @@ class MigrationContext(BaseModel):
     business_criticality: str = Field(default="medium", pattern="^(low|medium|high|critical)$")
     is_demo_assumption: bool = True
 
+class MitigationGuidance(BaseModel):
+    immediate_action: str
+    interim_controls: list[str]
+    migration_dependency: str
+    implementation_caution: str
+    validation_step: str
+
 class MigrationRecommendation(BaseModel):
     finding_id: Optional[str] = None
     detected_algorithm: str
@@ -125,6 +132,7 @@ class MigrationRecommendation(BaseModel):
     urgency: MigrationPriority
     migration_notes: str
     mosca: Optional[MoscaScore] = None
+    mitigation: Optional[MitigationGuidance] = None
 
 class CBOMEntry(BaseModel):
     bom_ref: str = Field(default_factory=lambda: f"crypto-{uuid.uuid4().hex[:8]}")

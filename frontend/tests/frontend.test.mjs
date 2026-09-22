@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import {
   formatAlgorithm,
   formatSeverity,
@@ -132,4 +133,29 @@ test('28. moscaColor assigns distinct color classes based on urgency tier', () =
   assert.equal(moscaColor('ACT_NOW'), 'text-red-400');
   assert.equal(moscaColor('PLAN_NOW'), 'text-amber-400');
   assert.equal(moscaColor('MONITOR'), 'text-green-400');
+});
+
+
+const findingsPage = readFileSync(new URL('../app/findings/page.tsx', import.meta.url), 'utf8');
+const migrationPage = readFileSync(new URL('../app/migration/page.tsx', import.meta.url), 'utf8');
+
+test('29. finding details render mitigation before migration', () => {
+  const mitigation = findingsPage.indexOf('Mitigation Guidance');
+  const migration = findingsPage.indexOf('Migration — Target Cryptographic State');
+  assert.ok(mitigation >= 0 && migration > mitigation);
+  assert.match(findingsPage, /mitigation && \(/);
+});
+
+test('30. migration roadmap keeps mitigation and migration visible', () => {
+  assert.match(migrationPage, /> Mitigate/);
+  assert.match(migrationPage, /> Migrate/);
+  assert.match(migrationPage, /mitigation \? \(/);
+  assert.match(migrationPage, /No structured mitigation is available/);
+});
+
+test('31. guidance cards guard long text from overflow', () => {
+  assert.match(findingsPage, /break-words/);
+  assert.match(findingsPage, /min-w-0/);
+  assert.match(migrationPage, /break-words/);
+  assert.match(migrationPage, /min-w-0/);
 });

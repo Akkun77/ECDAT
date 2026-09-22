@@ -2,9 +2,9 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { AlertTriangle, Clock, Activity, CheckCircle2, ChevronDown, ChevronUp, Info, ArrowRight, Shield, Zap } from 'lucide-react';
+import { AlertTriangle, Clock, Activity, CheckCircle2, ChevronDown, ChevronUp, Info, ArrowRight, Shield, Zap, ListChecks } from 'lucide-react';
 import { useScanContext } from '@/components/scan-provider';
-import { formatAlgorithm, formatCurrentSecurity, formatQuantumRisk, formatOperation, currentSecurityColor, quantumRiskColor, moscaBg, moscaColor } from '@/lib/display';
+import { formatAlgorithm, formatCurrentSecurity, formatQuantumRisk, formatOperation, currentSecurityColor, quantumRiskColor, moscaColor } from '@/lib/display';
 import type { FindingResponse } from '@/types/api';
 
 export default function MigrationPage() {
@@ -121,12 +121,13 @@ export default function MigrationPage() {
                     const quantumStatus = finding.quantum_status || finding.risk_assessment?.quantum_risk_status || '';
                     const recommendation = finding.migration_recommendation?.suggested_direction || finding.reason || '';
                     const notes = finding.migration_recommendation?.migration_notes || '';
+                    const mitigation = finding.migration_recommendation?.mitigation;
                     const mosca = finding.mosca;
 
                     return (
                       <div key={finding.id} className="py-4 first:pt-1 last:pb-1">
-                        <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
-                          <div className="flex-1 space-y-2">
+                        <div className="space-y-4 min-w-0">
+                          <div className="space-y-2 min-w-0">
                             {/* Algorithm + Operation */}
                             <div className="flex items-center gap-2.5 flex-wrap">
                               <span className="text-base font-bold text-slate-100">
@@ -182,20 +183,42 @@ export default function MigrationPage() {
                             )}
                           </div>
 
-                          {/* Recommendation Card */}
-                          <div className="lg:w-96 bg-slate-800/60 border border-slate-700/60 rounded-xl p-4 shrink-0 space-y-2">
-                            <div className="text-xs font-semibold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
-                              <ArrowRight className="w-3.5 h-3.5" />
-                              Recommended Migration Direction
+                          <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1.15fr_auto_1fr] gap-3 items-stretch min-w-0">
+                            <div className="bg-slate-800/50 border border-slate-700/60 rounded-xl p-4 min-w-0">
+                              <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Current / Quantum Risk</div>
+                              <p className="text-sm text-slate-200 break-words">{finding.reason}</p>
                             </div>
-                            <p className="text-sm font-medium text-slate-200 leading-snug">
-                              {recommendation}
-                            </p>
-                            {notes && (
-                              <p className="text-xs text-slate-400 leading-relaxed pt-1 border-t border-slate-700/40">
-                                {notes}
-                              </p>
-                            )}
+                            <ArrowRight className="hidden lg:block w-4 h-4 text-slate-600 self-center" />
+                            <div className="bg-amber-950/20 border border-amber-900/40 rounded-xl p-4 min-w-0">
+                              <div className="text-[11px] font-semibold text-amber-300 uppercase tracking-wider flex items-center gap-1.5 mb-2">
+                                <ListChecks className="w-3.5 h-3.5" /> Mitigate
+                              </div>
+                              {mitigation ? (
+                                <>
+                                  <p className="text-sm font-medium text-slate-200 break-words">{mitigation.immediate_action}</p>
+                                  <ul className="mt-2 space-y-1 text-xs text-slate-400 break-words">
+                                    {mitigation.interim_controls.map((control, index) => (
+                                      <li key={`${finding.id}-roadmap-control-${index}`} className="flex gap-2"><span className="text-amber-400">•</span><span>{control}</span></li>
+                                    ))}
+                                  </ul>
+                                </>
+                              ) : (
+                                <p className="text-xs text-slate-500">No structured mitigation is available for this saved finding.</p>
+                              )}
+                            </div>
+                            <ArrowRight className="hidden lg:block w-4 h-4 text-slate-600 self-center" />
+                            <div className="bg-blue-950/30 border border-blue-800/50 rounded-xl p-4 min-w-0 space-y-2">
+                              <div className="text-[11px] font-semibold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
+                                <ArrowRight className="w-3.5 h-3.5" /> Migrate
+                              </div>
+                              <p className="text-sm font-semibold text-slate-100 break-words">{recommendation}</p>
+                              {notes && <p className="text-xs text-slate-400 break-words">{notes}</p>}
+                              {mitigation && (
+                                <p className="text-xs text-emerald-300/90 pt-2 border-t border-blue-900/40 break-words">
+                                  <span className="font-semibold uppercase tracking-wider">Verify:</span> {mitigation.validation_step}
+                                </p>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
