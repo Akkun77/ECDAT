@@ -343,54 +343,52 @@ export default function FindingsPage() {
                       </div>
                     )}
 
-                    {/* 10. Mitigation Guidance */}
+                    {/* 10. Mitigation */}
                     {mitigation && (
-                      <div className="bg-slate-900/70 border border-slate-700 rounded-xl p-4 space-y-4 min-w-0">
+                      <div className="bg-amber-950/20 border border-amber-500/50 rounded-xl p-5 space-y-4 min-w-0 shadow-lg shadow-amber-950/10">
                         <div>
-                          <h3 className="text-xs font-semibold text-amber-300 uppercase tracking-wider flex items-center gap-2">
-                            <ListChecks className="w-4 h-4" />
-                            Mitigation Guidance
+                          <h3 aria-label="Mitigation Guidance" className="text-base font-bold text-amber-300 uppercase tracking-wider flex items-center gap-2">
+                            <ListChecks className="w-5 h-5" />
+                            Mitigation
                           </h3>
-                          <p className="text-[11px] text-slate-500 mt-1">Reduce risk now while migration is prepared.</p>
+                          <p className="text-xs text-amber-100/60 mt-1">Immediate risk-reduction actions before full migration</p>
                         </div>
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 text-sm min-w-0">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 text-sm min-w-0">
                           <div className="min-w-0">
-                            <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Immediate Action</div>
-                            <p className="text-slate-200 leading-relaxed break-words">{mitigation.immediate_action}</p>
+                            <div className="text-[11px] font-bold text-amber-300/80 uppercase tracking-wider mb-1">Immediate Action</div>
+                            <p className="font-medium text-slate-100 leading-relaxed break-words">{mitigation.immediate_action}</p>
                           </div>
                           <div className="min-w-0">
-                            <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Interim Controls</div>
+                            <div className="text-[11px] font-bold text-amber-300/80 uppercase tracking-wider mb-1">Interim Controls</div>
                             <ul className="space-y-1 text-slate-300 break-words">
                               {mitigation.interim_controls.map((control, index) => (
                                 <li key={`${finding.id}-control-${index}`} className="flex gap-2"><span className="text-amber-400">•</span><span>{control}</span></li>
                               ))}
+                              <li className="flex gap-2"><span className="text-amber-400">•</span><span>{mitigation.migration_dependency}</span></li>
                             </ul>
                           </div>
                           <div className="min-w-0">
-                            <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Migration Dependency</div>
-                            <p className="text-slate-300 leading-relaxed break-words">{mitigation.migration_dependency}</p>
+                            <div className="text-[11px] font-bold text-amber-300/80 uppercase tracking-wider mb-1">Implementation Caution</div>
+                            <p className="text-slate-200 leading-relaxed break-words">{mitigation.implementation_caution}</p>
                           </div>
-                          <div className="min-w-0 space-y-3">
-                            <div>
-                              <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Implementation Caution</div>
-                              <p className="text-slate-300 leading-relaxed break-words">{mitigation.implementation_caution}</p>
-                            </div>
-                            <div>
-                              <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Validation</div>
-                              <p className="text-slate-300 leading-relaxed break-words">{mitigation.validation_step}</p>
-                            </div>
+                          <div className="min-w-0">
+                            <div className="text-[11px] font-bold text-amber-300/80 uppercase tracking-wider mb-1">Validation Step</div>
+                            <p className="text-slate-200 leading-relaxed break-words">{mitigation.validation_step}</p>
                           </div>
                         </div>
                       </div>
                     )}
 
                     {/* 11. Recommended Migration */}
-                    <div className="bg-blue-950/30 border border-blue-800/50 rounded-xl p-5 space-y-2 shadow-sm">
-                      <h3 className="text-xs font-semibold text-blue-400 uppercase tracking-wider flex items-center gap-2">
-                        <ArrowRight className="w-4 h-4" />
-                        Migration — Target Cryptographic State
-                      </h3>
-                      <p className="text-sm font-medium text-slate-100">
+                    <div className="bg-gradient-to-br from-blue-950/70 to-blue-900/30 border-2 border-blue-500/60 rounded-xl p-6 space-y-3 shadow-xl shadow-blue-950/20">
+                      <div>
+                        <h3 aria-label="Migration — Target Cryptographic State" className="text-base font-bold text-blue-300 uppercase tracking-wider flex items-center gap-2">
+                          <ArrowRight className="w-5 h-5" />
+                          Migration Target
+                        </h3>
+                        <p className="text-xs text-blue-200/60 mt-1">Target cryptographic state</p>
+                      </div>
+                      <p className="text-lg font-bold text-slate-50 leading-relaxed">
                         {finding.migration_recommendation?.suggested_direction || finding.risk_assessment?.recommendation || 'Evaluate modern algorithm alternatives.'}
                       </p>
                       {finding.migration_recommendation?.migration_notes && (

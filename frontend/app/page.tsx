@@ -364,13 +364,13 @@ export default function OverviewPage() {
           <FeatureCard
             icon={ListChecks}
             title="Mitigate"
-            description="Reduce exposure with practical interim controls while migration is prepared."
+            description="Reduce immediate exposure before migration."
             href="/migration"
           />
           <FeatureCard
             icon={ArrowRightLeft}
             title="Migrate"
-            description="Move toward the operation-appropriate target cryptographic state."
+            description="Move to the target cryptographic state."
             href="/migration"
           />
         </div>

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { AlertTriangle, Clock, Activity, CheckCircle2, ChevronDown, ChevronUp, Info, ArrowRight, Shield, Zap, ListChecks } from 'lucide-react';
+import { AlertTriangle, Clock, Activity, CheckCircle2, ChevronDown, ChevronUp, Info, ArrowDown, ArrowRight, Shield, Zap, ListChecks } from 'lucide-react';
 import { useScanContext } from '@/components/scan-provider';
 import { formatAlgorithm, formatCurrentSecurity, formatQuantumRisk, formatOperation, currentSecurityColor, quantumRiskColor, moscaColor } from '@/lib/display';
 import type { FindingResponse } from '@/types/api';
@@ -183,41 +183,56 @@ export default function MigrationPage() {
                             )}
                           </div>
 
-                          <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1.15fr_auto_1fr] gap-3 items-stretch min-w-0">
-                            <div className="bg-slate-800/50 border border-slate-700/60 rounded-xl p-4 min-w-0">
-                              <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Current / Quantum Risk</div>
+                          <div className="space-y-2 min-w-0">
+                            <div className="bg-slate-800/60 border border-slate-600/70 rounded-xl p-4 min-w-0">
+                              <div className="text-xs font-bold text-slate-300 uppercase tracking-widest mb-2">Risk</div>
+                              <div className="flex flex-wrap gap-4 text-xs mb-2">
+                                <span className="text-slate-400">Current: <strong className={currentSecurityColor(currentSecurity)}>{formatCurrentSecurity(currentSecurity)}</strong></span>
+                                <span className="text-slate-400">Quantum: <strong className={quantumRiskColor(quantumStatus)}>{formatQuantumRisk(quantumStatus)}</strong></span>
+                              </div>
                               <p className="text-sm text-slate-200 break-words">{finding.reason}</p>
                             </div>
-                            <ArrowRight className="hidden lg:block w-4 h-4 text-slate-600 self-center" />
-                            <div className="bg-amber-950/20 border border-amber-900/40 rounded-xl p-4 min-w-0">
-                              <div className="text-[11px] font-semibold text-amber-300 uppercase tracking-wider flex items-center gap-1.5 mb-2">
-                                <ListChecks className="w-3.5 h-3.5" /> Mitigate
+
+                            <ArrowDown className="w-5 h-5 text-slate-500 mx-auto" aria-hidden="true" />
+
+                            <div className="bg-amber-950/25 border border-amber-500/50 rounded-xl p-4 min-w-0">
+                              <div className="text-xs font-bold text-amber-300 uppercase tracking-widest flex items-center gap-2 mb-2">
+                                <ListChecks className="w-4 h-4" /> Mitigate
                               </div>
                               {mitigation ? (
                                 <>
-                                  <p className="text-sm font-medium text-slate-200 break-words">{mitigation.immediate_action}</p>
-                                  <ul className="mt-2 space-y-1 text-xs text-slate-400 break-words">
+                                  <p className="text-sm font-semibold text-slate-100 break-words">{mitigation.immediate_action}</p>
+                                  <ul className="mt-2 space-y-1 text-xs text-slate-300 break-words">
                                     {mitigation.interim_controls.map((control, index) => (
                                       <li key={`${finding.id}-roadmap-control-${index}`} className="flex gap-2"><span className="text-amber-400">•</span><span>{control}</span></li>
                                     ))}
+                                    <li className="flex gap-2"><span className="text-amber-400">•</span><span>{mitigation.migration_dependency}</span></li>
                                   </ul>
                                 </>
                               ) : (
                                 <p className="text-xs text-slate-500">No structured mitigation is available for this saved finding.</p>
                               )}
                             </div>
-                            <ArrowRight className="hidden lg:block w-4 h-4 text-slate-600 self-center" />
-                            <div className="bg-blue-950/30 border border-blue-800/50 rounded-xl p-4 min-w-0 space-y-2">
-                              <div className="text-[11px] font-semibold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
-                                <ArrowRight className="w-3.5 h-3.5" /> Migrate
+
+                            <ArrowDown className="w-5 h-5 text-slate-500 mx-auto" aria-hidden="true" />
+
+                            <div className="bg-gradient-to-br from-blue-950/70 to-blue-900/30 border-2 border-blue-500/70 rounded-xl p-5 min-w-0 space-y-2 shadow-lg shadow-blue-950/20">
+                              <div className="text-sm font-bold text-blue-300 uppercase tracking-widest flex items-center gap-2">
+                                <ArrowRight className="w-4 h-4" /> Migrate
                               </div>
-                              <p className="text-sm font-semibold text-slate-100 break-words">{recommendation}</p>
-                              {notes && <p className="text-xs text-slate-400 break-words">{notes}</p>}
-                              {mitigation && (
-                                <p className="text-xs text-emerald-300/90 pt-2 border-t border-blue-900/40 break-words">
-                                  <span className="font-semibold uppercase tracking-wider">Verify:</span> {mitigation.validation_step}
-                                </p>
-                              )}
+                              <p className="text-base font-bold text-slate-50 break-words">{recommendation}</p>
+                              {notes && <p className="text-xs text-blue-100/60 break-words">{notes}</p>}
+                            </div>
+
+                            <ArrowDown className="w-5 h-5 text-slate-500 mx-auto" aria-hidden="true" />
+
+                            <div className="bg-emerald-950/20 border border-emerald-700/50 rounded-xl p-4 min-w-0">
+                              <div className="text-xs font-bold text-emerald-300 uppercase tracking-widest flex items-center gap-2 mb-1">
+                                <CheckCircle2 className="w-4 h-4" /> Verify
+                              </div>
+                              <p className="text-sm text-slate-200 break-words">
+                                {mitigation?.validation_step || 'Validate the approved change and re-scan.'}
+                              </p>
                             </div>
                           </div>
                         </div>
