@@ -6,8 +6,9 @@ import {
   formatAlgorithm, formatSeverity, formatCurrentSecurity, formatQuantumRisk, formatOperation, 
   severityBg, currentSecurityColor, quantumRiskColor, moscaColor, moscaBg 
 } from '@/lib/display';
-import { AlertTriangle, Shield, Zap, FileCode, ChevronDown, ChevronUp, Info, Search, ArrowRight, ArrowDown, ListChecks, CheckCircle2 } from 'lucide-react';
+import { AlertTriangle, Shield, Zap, FileCode, ChevronDown, ChevronUp, Info, Search } from 'lucide-react';
 import type { FindingResponse } from '@/types/api';
+import InteractiveMitigation from '@/components/interactive-mitigation';
 
 export default function FindingsPage() {
   const { findings, summary } = useScanContext();
@@ -345,77 +346,19 @@ export default function FindingsPage() {
                     )}
 
                     {/* ── RISK → MITIGATE → MIGRATE → VERIFY hierarchy ── */}
-
-                    {/* MITIGATE card */}
-                    {mitigation && (
-                      <>
-                        <div className="bg-amber-950/20 border border-amber-500/30 rounded-xl p-5 space-y-3 min-w-0">
-                          <div className="flex items-start gap-3">
-                            <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 shrink-0">
-                              <ListChecks className="w-5 h-5 text-amber-400" />
-                            </div>
-                            <div>
-                              <h3 className="text-xs font-bold text-amber-300 uppercase tracking-widest">Mitigate</h3>
-                              <p className="text-xs text-amber-200/60 mt-0.5">Reduce risk now while migration is prepared</p>
-                            </div>
-                          </div>
-                          <div className="space-y-2.5 text-xs pl-[44px]">
-                            <div>
-                              <div className="text-[11px] font-bold text-amber-400/80 uppercase tracking-wider mb-0.5">Immediate Action</div>
-                              <p className="text-slate-200 leading-relaxed break-words">{mitigation.immediate_action}</p>
-                            </div>
-                            <div>
-                              <div className="text-[11px] font-bold text-amber-400/80 uppercase tracking-wider mb-0.5">Interim Controls</div>
-                              <ul className="space-y-0.5 text-slate-300 break-words">
-                                {mitigation.interim_controls.slice(0, 3).map((control, index) => (
-                                  <li key={`${finding.id}-control-${index}`} className="flex gap-2"><span className="text-amber-400/80">•</span><span>{control}</span></li>
-                                ))}
-                              </ul>
-                            </div>
-                            {mitigation.implementation_caution && (
-                              <div>
-                                <div className="text-[11px] font-bold text-amber-400/80 uppercase tracking-wider mb-0.5">Implementation Caution</div>
-                                <p className="text-slate-400 leading-relaxed break-words text-xs">{mitigation.implementation_caution}</p>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="flex justify-center"><ArrowDown className="w-4 h-4 text-slate-600" /></div>
-                      </>
-                    )}
-
-                    {/* MIGRATE card */}
-                    <div className="bg-blue-950/20 border border-blue-500/40 rounded-xl p-5 space-y-3">
-                      <div className="flex items-start gap-3">
-                        <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20 shrink-0">
-                          <ArrowRight className="w-5 h-5 text-blue-400" />
-                        </div>
-                        <div>
-                          <h3 className="text-xs font-bold text-blue-300 uppercase tracking-widest">Migrate</h3>
-                          <p className="text-xs text-blue-200/60 mt-0.5">Target cryptographic state</p>
-                        </div>
-                      </div>
-                      <p className="text-base font-bold text-slate-100 leading-relaxed pl-[44px]">
-                        {finding.migration_recommendation?.suggested_direction || finding.risk_assessment?.recommendation || 'Evaluate modern algorithm alternatives.'}
-                      </p>
-                      {finding.migration_recommendation?.migration_notes && (
-                        <p className="text-xs text-slate-400 leading-relaxed pl-[44px] pt-1 border-t border-blue-900/40">
-                          {finding.migration_recommendation.migration_notes}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* VERIFY strip */}
-                    <div className="bg-emerald-950/20 border border-emerald-500/30 rounded-xl px-4 py-3 flex items-center gap-3">
-                      <div className="p-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 shrink-0">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                      </div>
-                      <div>
-                        <span className="text-xs font-bold text-emerald-300 uppercase tracking-widest">Verify</span>
-                        <span className="text-xs text-slate-400 ml-2">Re-scan repository after remediation</span>
-                      </div>
-                    </div>
+                    <InteractiveMitigation
+                      findingId={finding.id}
+                      algorithm={finding.algorithm}
+                      currentSecurity={finding.current_security || finding.risk_assessment?.current_security_status}
+                      quantumStatus={finding.quantum_status || finding.risk_assessment?.quantum_risk_status}
+                      category={finding.category}
+                      keySize={finding.key_size}
+                      operation={finding.operation || finding.operation_type}
+                      mitigation={mitigation}
+                      recommendation={finding.migration_recommendation?.suggested_direction || finding.risk_assessment?.recommendation}
+                      notes={finding.migration_recommendation?.migration_notes}
+                      reason={finding.reason}
+                    />
                   </div>
                 )}
               </div>

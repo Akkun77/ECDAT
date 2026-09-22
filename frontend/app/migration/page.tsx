@@ -2,10 +2,11 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { AlertTriangle, Clock, Activity, CheckCircle2, ChevronDown, ChevronUp, Info, ArrowDown, ArrowRight, Shield, Zap, ListChecks } from 'lucide-react';
+import { AlertTriangle, Clock, Activity, CheckCircle2, ChevronDown, ChevronUp, Info, ArrowDown, ArrowRight, Shield, Zap } from 'lucide-react';
 import { useScanContext } from '@/components/scan-provider';
 import { formatAlgorithm, formatCurrentSecurity, formatQuantumRisk, formatOperation, currentSecurityColor, quantumRiskColor, moscaColor } from '@/lib/display';
 import type { FindingResponse } from '@/types/api';
+import InteractiveMitigation from '@/components/interactive-mitigation';
 
 export default function MigrationPage() {
   const { migration, scanStatus, state } = useScanContext();
@@ -219,65 +220,20 @@ export default function MigrationPage() {
                               <p className="text-xs text-slate-200 break-words leading-relaxed">{finding.reason}</p>
                             </div>
 
-                            <ArrowDown className="w-4 h-4 text-slate-600 mx-auto" aria-hidden="true" />
-
-                            {/* MITIGATE card */}
-                            <div className="bg-amber-950/20 border border-amber-500/30 rounded-xl p-4 min-w-0">
-                              <div className="flex items-start gap-3 mb-2">
-                                <div className="p-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 shrink-0">
-                                  <ListChecks className="w-4 h-4 text-amber-400" />
-                                </div>
-                                <div>
-                                  <div className="text-xs font-bold text-amber-300 uppercase tracking-widest">Mitigate</div>
-                                  <p className="text-[11px] text-amber-200/60 mt-0.5">Reduce risk now while migration is prepared</p>
-                                </div>
-                              </div>
-                              {mitigation ? (
-                                <div className="pl-[40px] space-y-2">
-                                  <p className="text-xs font-semibold text-slate-100 break-words">{mitigation.immediate_action}</p>
-                                  <ul className="space-y-0.5 text-xs text-slate-300 break-words">
-                                    {mitigation.interim_controls.slice(0, 3).map((control, index) => (
-                                      <li key={`${finding.id}-roadmap-control-${index}`} className="flex gap-2"><span className="text-amber-400/80">•</span><span>{control}</span></li>
-                                    ))}
-                                  </ul>
-                                  {mitigation.implementation_caution && (
-                                    <p className="text-[11px] text-slate-500 break-words">{mitigation.implementation_caution}</p>
-                                  )}
-                                </div>
-                              ) : (
-                                <p className="text-xs text-slate-500 pl-[40px]">No structured mitigation is available for this saved finding.</p>
-                              )}
-                            </div>
-
-                            <ArrowDown className="w-4 h-4 text-slate-600 mx-auto" aria-hidden="true" />
-
-                            {/* MIGRATE card */}
-                            <div className="bg-blue-950/20 border border-blue-500/40 rounded-xl p-4 min-w-0 space-y-2">
-                              <div className="flex items-start gap-3">
-                                <div className="p-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 shrink-0">
-                                  <ArrowRight className="w-4 h-4 text-blue-400" />
-                                </div>
-                                <div>
-                                  <div className="text-xs font-bold text-blue-300 uppercase tracking-widest">Migrate</div>
-                                  <p className="text-[11px] text-blue-200/60 mt-0.5">Target cryptographic state</p>
-                                </div>
-                              </div>
-                              <p className="text-sm font-bold text-slate-100 break-words pl-[40px]">{recommendation}</p>
-                              {notes && <p className="text-xs text-slate-400 break-words pl-[40px]">{notes}</p>}
-                            </div>
-
-                            <ArrowDown className="w-4 h-4 text-slate-600 mx-auto" aria-hidden="true" />
-
-                            {/* VERIFY strip */}
-                            <div className="bg-emerald-950/20 border border-emerald-500/30 rounded-xl px-4 py-2.5 min-w-0 flex items-center gap-3">
-                              <div className="p-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 shrink-0">
-                                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                              </div>
-                              <div>
-                                <span className="text-xs font-bold text-emerald-300 uppercase tracking-widest">Verify</span>
-                                <span className="text-xs text-slate-400 ml-2">Re-scan repository after remediation</span>
-                              </div>
-                            </div>
+                            {/* MITIGATE → MIGRATE → VERIFY interactive hierarchy */}
+                            <InteractiveMitigation
+                              findingId={finding.id}
+                              algorithm={finding.algorithm}
+                              currentSecurity={finding.current_security || finding.risk_assessment?.current_security_status}
+                              quantumStatus={finding.quantum_status || finding.risk_assessment?.quantum_risk_status}
+                              category={finding.category}
+                              keySize={finding.key_size}
+                              operation={finding.operation || finding.operation_type}
+                              mitigation={mitigation}
+                              recommendation={recommendation}
+                              notes={notes}
+                              reason={finding.reason}
+                            />
                           </div>
                         </div>
                       </div>
