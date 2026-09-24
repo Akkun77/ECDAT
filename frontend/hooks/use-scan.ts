@@ -7,7 +7,10 @@ export type ScanState = 'idle' | 'scanning' | 'completed' | 'failed';
 
 export function useScan() {
   const [state, setState] = useState<ScanState>('idle');
-  const [scanId, setScanId] = useState<string | null>(null);
+  const [scanId, setScanId] = useState<string | null>(() => {
+    if (typeof window === 'undefined') return null;
+    try { return localStorage.getItem('ecdat_last_scan_id'); } catch { return null; }
+  });
   const [scanStatus, setScanStatus] = useState<ScanResponse | null>(null);
   const [summary, setSummary] = useState<SummaryResponse | null>(null);
   const [findings, setFindings] = useState<FindingResponse[]>([]);
@@ -16,6 +19,7 @@ export function useScan() {
   const [cbom, setCbom] = useState<CBOMResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
+  const hasHydratedLastScan = useRef(false);
 
   const loadResults = useCallback(async (id: string) => {
     try {
@@ -43,17 +47,12 @@ export function useScan() {
     }
   }, []);
 
-  // Auto-rehydrate last scan on initial mount/refresh
+  // Auto-rehydrate a lazily restored scan id exactly once on initial mount/refresh.
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    try {
-      const saved = localStorage.getItem('ecdat_last_scan_id');
-      if (saved && state === 'idle' && !scanId) {
-        setScanId(saved);
-        loadResults(saved);
-      }
-    } catch {}
-  }, [state, scanId, loadResults]);
+    if (!scanId || hasHydratedLastScan.current) return;
+    hasHydratedLastScan.current = true;
+    void loadResults(scanId);
+  }, [scanId, loadResults]);
 
   const pollStatus = useCallback((id: string) => {
     const poll = async () => {
@@ -68,7 +67,7 @@ export function useScan() {
           setError(status.error || 'Scan failed');
           setState('failed');
         }
-      } catch (e) {
+      } catch {
         // Ignore transient errors during polling
       }
     };

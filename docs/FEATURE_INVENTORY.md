@@ -15,6 +15,7 @@ For a one-to-one mapping between features and visual/prose evidence, see [FEATUR
 - **Independent dual axes — implemented.** `backend/app/risk/engine.py` and policy data retain current security independently of quantum status; the UI filters both. [RSA dual risk](screenshots/06-rsa-dual-risk.png)
 - **Deterministic rules — implemented.** Classifications and recommendations are policy-driven, not LLM-generated.
 - **Operation-aware direction — implemented with static-evidence limits.** Extracted operation/key-size informs ML-KEM/hybrid planning for key establishment and ML-DSA directions for signatures.
+  - The bundled demo has both RSA operation types, and `backend/tests/test_mitigation.py::test_rsa_signature_and_key_establishment_guidance_differ` verifies distinct directions. This is source/test evidence, not a fabricated visual distinction.
 
 ## 3. CBOM and data visualizations
 

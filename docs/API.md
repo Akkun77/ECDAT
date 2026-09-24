@@ -12,19 +12,19 @@ python -m venv .venv
 .\.venv\Scripts\python -m uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8000
 ~~~
 
-Use one Uvicorn process, without --workers or --reload during scans. API: http://localhost:8000. Swagger: http://localhost:8000/docs. OpenAPI: http://localhost:8000/openapi.json. CORS permits http://localhost:3000.
+Use one Uvicorn process, without --workers or --reload during scans. API: http://127.0.0.1:8000. Swagger: http://127.0.0.1:8000/docs. OpenAPI: http://127.0.0.1:8000/openapi.json. CORS permits http://localhost:3000.
 
 No authentication is implemented. Bind to loopback and use only on a trusted development machine. CORS is a browser access policy, not authentication.
 
 ## Quick real demo
 
 ~~~powershell
-$scan = Invoke-RestMethod -Method Post http://localhost:8000/api/scan/demo
-Invoke-RestMethod "http://localhost:8000/api/scan/$($scan.scan_id)"
+$scan = Invoke-RestMethod -Method Post http://127.0.0.1:8000/api/scan/demo
+Invoke-RestMethod "http://127.0.0.1:8000/api/scan/$($scan.scan_id)"
 # Poll until status is COMPLETED or FAILED.
-Invoke-RestMethod "http://localhost:8000/api/summary/$($scan.scan_id)"
-Invoke-RestMethod "http://localhost:8000/api/findings/$($scan.scan_id)"
-Invoke-WebRequest "http://localhost:8000/api/export/$($scan.scan_id)?format=json" -OutFile demo-cbom.json
+Invoke-RestMethod "http://127.0.0.1:8000/api/summary/$($scan.scan_id)"
+Invoke-RestMethod "http://127.0.0.1:8000/api/findings/$($scan.scan_id)"
+Invoke-WebRequest "http://127.0.0.1:8000/api/export/$($scan.scan_id)?format=json" -OutFile demo-cbom.json
 ~~~
 
 POST returns HTTP 202 with scan_id and status_url. No scan results are preloaded or hardcoded.
@@ -68,7 +68,7 @@ Only repository_path is required. POST /api/scan/demo accepts an optional JSON o
 Upload example:
 
 ~~~powershell
-curl.exe -F "file=@repository.zip" -F "project_name=Uploaded demo" http://localhost:8000/api/scan/upload
+curl.exe -F "file=@repository.zip" -F "project_name=Uploaded demo" http://127.0.0.1:8000/api/scan/upload
 ~~~
 
 ## Local paths and storage

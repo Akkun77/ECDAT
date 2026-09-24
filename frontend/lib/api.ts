@@ -1,6 +1,6 @@
 import type { ScanAccepted, ScanResponse, SummaryResponse, FindingPage, FindingResponse, CBOMResponse, MigrationResponse, GraphResponse } from '@/types/api';
 
-export const API_BASE = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/$/, '') || 'http://localhost:8000';
+export const API_BASE = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/$/, '') || 'http://127.0.0.1:8000';
 
 class ApiError extends Error {
   constructor(public status: number, message: string) {

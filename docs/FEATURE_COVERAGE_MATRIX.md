@@ -5,6 +5,7 @@
 | Six-stage lifecycle | Product explanation; hero is illustrative | `screenshots/01-overview.png`, `02-product-explainer.png` | Lifecycle + UX inventory |
 | Demo scanning | Real bundled static scan, not runtime analysis | `screenshots/03-demo-scan-complete.png` | Demo result |
 | Evidence and dual risk | Source path/line; independent current/quantum state | `05-md5-source-evidence.png`, `06-rsa-dual-risk.png` | Discovery/risk inventory |
+| RSA operation-specific migration | ML-KEM/hybrid for key establishment; ML-DSA for signatures; planning only | `backend/tests/test_mitigation.py` regression evidence | README RSA section + risk inventory |
 | Findings filtering | Search and multi-axis filtering; local UI state | `showcase/findings-filtered-rsa.png` | Findings interaction section |
 | Sankey exposure map | Toggle, hover/keyboard/click selection filters real CBOM inventory | `10-cbom-exposure-map.png`, `showcase/cbom-sankey-quantum.png` | CBOM inventory |
 | Comparison chart | Grouped/dumbbell and selection filter; zero counts retained | `showcase/cbom-comparison-dumbbell.png` | CBOM inventory |

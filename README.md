@@ -47,6 +47,12 @@ Cryptography is distributed through application code, legacy utilities, and cred
 | --- |
 | ![Source-to-risk CBOM Sankey with real summary metrics](docs/screenshots/10-cbom-exposure-map.png) |
 
+### Current versus quantum exposure by family
+
+![Real CBOM dumbbell comparison of current and quantum exposure](docs/showcase/cbom-comparison-dumbbell.png)
+
+The comparison view plots current-security concerns and quantum-exposure concerns on the same count scale. Security-hygiene findings remain distinct from cryptographic algorithm families; zero means no matching concern in this scan, not an inferred safe configuration.
+
 | Architecture overview | Expanded Crypto Map | Reports and exports |
 | --- | --- | --- |
 | ![Collapsed Crypto Map architecture view](docs/screenshots/12-crypto-map-architecture.png) | ![Expanded Crypto Map relationships](docs/screenshots/13-crypto-map-expanded.png) | ![JSON and CSV export center](docs/screenshots/15-reports-exports.png) |
@@ -69,6 +75,15 @@ See the complete, source-backed [feature inventory](docs/FEATURE_INVENTORY.md).
 | ![Full Crypto Map mode](docs/showcase/crypto-map-full-graph.png) | ![Mobile Overview](docs/showcase/overview-mobile.png) | ![ECDAT system architecture](docs/SYSTEM_ARCHITECTURE.svg) |
 
 The CBOM comparison component also supports grouped-bar and dumbbell views with category filtering. Its supporting capture and the complete mapping are recorded in the [feature coverage matrix](docs/FEATURE_COVERAGE_MATRIX.md).
+
+## RSA migration direction depends on operation
+
+ECDAT’s bundled demo includes RSA-2048 findings for both key-establishment/encryption-style use and digital-signature use. The recommendation engine keeps their target directions separate:
+
+- **Key establishment or encryption:** plan ML-KEM or a reviewed hybrid key-establishment architecture. ML-KEM is not bulk encryption and is not a drop-in RSA replacement.
+- **Digital signatures:** plan ML-DSA or another approved post-quantum signature scheme.
+
+Both directions are migration planning, not automatic remediation. The supporting regression test is `backend/tests/test_mitigation.py::test_rsa_signature_and_key_establishment_guidance_differ`.
 
 ## Architecture and stack
 
@@ -99,7 +114,7 @@ npm run build
 npm start -- -p 3000
 ```
 
-Open http://localhost:3000, then select **Scan Demo Repository**. The health endpoint is http://localhost:8000/api/health and Swagger is http://localhost:8000/docs.
+Open http://localhost:3000, then select **Scan Demo Repository**. The frontend defaults to `http://127.0.0.1:8000` for its API; the health endpoint is http://127.0.0.1:8000/api/health and Swagger is http://127.0.0.1:8000/docs.
 
 ## Validate
 

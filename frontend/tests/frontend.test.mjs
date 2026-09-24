@@ -206,6 +206,7 @@ const mitigationHubPage = readFileSync(new URL('../app/mitigation/page.tsx', imp
 const scanPage = readFileSync(new URL('../app/scan/page.tsx', import.meta.url), 'utf8');
 const cryptographicCore = readFileSync(new URL('../components/cryptographic-core.tsx', import.meta.url), 'utf8');
 const exposureComparisonChart = readFileSync(new URL('../components/exposure-comparison-chart.tsx', import.meta.url), 'utf8');
+const useScanHook = readFileSync(new URL('../hooks/use-scan.ts', import.meta.url), 'utf8');
 
 test('36. sidebar navigation includes Mitigation Hub between Crypto Map and Migration Plan', () => {
   const cryptoMapIdx = sidebarFile.indexOf("href: '/crypto-map'");
@@ -358,4 +359,11 @@ test('46. Guided scan hero keeps its product workflow and risk narrative explici
   assert.match(cryptographicCore, /not automatic fixing or runtime proof/);
   assert.match(cryptographicCore, /IntersectionObserver/);
   assert.match(cryptographicCore, /prefers-reduced-motion/);
+});
+
+test('47. persisted scan restoration initializes lazily and hydrates once without effect-state churn', () => {
+  assert.match(useScanHook, /useState<string \| null>\(\(\) =>/);
+  assert.match(useScanHook, /hasHydratedLastScan/);
+  assert.match(useScanHook, /void loadResults\(scanId\)/);
+  assert.doesNotMatch(useScanHook, /setScanId\(saved\)/);
 });
