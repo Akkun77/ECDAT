@@ -58,6 +58,18 @@ The fresh scan used for this showcase completed with **10 files**, **50 findings
 
 See the complete, source-backed [feature inventory](docs/FEATURE_INVENTORY.md).
 
+## Interactive feature states
+
+| Findings filter | CBOM quantum view | Mitigation controls |
+| --- | --- | --- |
+| ![RSA-filtered findings state](docs/showcase/findings-filtered-rsa.png) | ![CBOM quantum exposure interaction state](docs/showcase/cbom-sankey-quantum.png) | ![Expanded mitigation controls](docs/showcase/mitigation-checklist-expanded.png) |
+
+| Full Crypto Map | Compact responsive view | System architecture |
+| --- | --- | --- |
+| ![Full Crypto Map mode](docs/showcase/crypto-map-full-graph.png) | ![Mobile Overview](docs/showcase/overview-mobile.png) | ![ECDAT system architecture](docs/SYSTEM_ARCHITECTURE.svg) |
+
+The CBOM comparison component also supports grouped-bar and dumbbell views with category filtering. Its supporting capture and the complete mapping are recorded in the [feature coverage matrix](docs/FEATURE_COVERAGE_MATRIX.md).
+
 ## Architecture and stack
 
 | Layer | Implementation |

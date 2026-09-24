@@ -2,6 +2,8 @@
 
 This inventory is evidence-based: “implemented” means the behavior exists in current local source, tests, and/or the fresh bundled demo; it does not imply production deployment or runtime verification.
 
+For a one-to-one mapping between features and visual/prose evidence, see [FEATURE_COVERAGE_MATRIX.md](FEATURE_COVERAGE_MATRIX.md).
+
 ## 1. Discovery engine
 
 - **Multi-language static discovery — implemented.** `backend/app/scanner/` coordinates Python, JavaScript/TypeScript, and Java. Python uses AST and import-alias handling; JavaScript/Java use rules and patterns. The Scan page triggers the bundled source repository. [Completed scan](screenshots/03-demo-scan-complete.png)
