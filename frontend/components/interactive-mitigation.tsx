@@ -9,7 +9,6 @@ import {
   ChevronDown, 
   ChevronUp, 
   AlertTriangle, 
-  Shield, 
   CheckSquare, 
   Square,
   ArrowDown,
@@ -50,7 +49,7 @@ export default function InteractiveMitigation({
   const [isExpanded, setIsExpanded] = useState(false);
   const [checkedItems, setCheckedItems] = useState<Record<number, boolean>>({});
 
-  const statusInfo = getStatusLabel(algorithm, currentSecurity, quantumStatus, category);
+  const statusInfo = getStatusLabel(algorithm, currentSecurity, quantumStatus, category, keySize);
   const summaryLine = getMitigationSummaryLine(
     algorithm, 
     currentSecurity, 
@@ -161,22 +160,22 @@ export default function InteractiveMitigation({
 
           {/* Collapsed view: Immediate Action summary line */}
           {!isExpanded && (
-            <div className="text-xs text-slate-300 pl-1 pt-1 flex items-start gap-2">
+            <div className="text-xs text-slate-300 pl-1 pt-1 flex items-start gap-2 min-w-0">
               <span className="text-amber-400 font-bold shrink-0">•</span>
-              <span className="text-slate-300 leading-relaxed"><strong className="text-slate-200 font-semibold">Immediate Action:</strong> {immediateAction}</span>
+              <span className="text-slate-300 leading-relaxed break-words min-w-0"><strong className="text-slate-200 font-semibold">Immediate Action:</strong> {immediateAction}</span>
             </div>
           )}
         </div>
 
         {/* Expanded Details Panel */}
         {isExpanded && (
-          <div className="px-4 pb-4 pt-2 border-t border-amber-500/20 space-y-3.5 bg-[#070b14]/50 text-xs">
+          <div className="px-4 pb-4 pt-2 border-t border-amber-500/20 space-y-3.5 bg-[#070b14]/50 text-xs min-w-0">
             {/* Immediate Action */}
-            <div className="space-y-1">
+            <div className="space-y-1 min-w-0">
               <div className="text-[11px] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
                 Immediate Action
               </div>
-              <p className="text-slate-200 leading-relaxed bg-[#070b14] p-2.5 rounded-lg border border-[#1e2d42]">
+              <p className="text-slate-200 leading-relaxed bg-[#070b14] p-2.5 rounded-lg border border-[#1e2d42] break-words min-w-0">
                 {immediateAction}
               </p>
             </div>
@@ -215,6 +214,9 @@ export default function InteractiveMitigation({
                     </div>
                   );
                 })}
+                <p className="pt-1 text-[10px] text-slate-500 leading-relaxed">
+                  Checklist selections are local planning notes, not verified remediation.
+                </p>
               </div>
             </div>
 
@@ -294,7 +296,7 @@ export default function InteractiveMitigation({
           </div>
           <div>
             <div className="text-xs font-bold text-emerald-300 uppercase tracking-widest">Verify</div>
-            <p className="text-xs text-slate-300 mt-0.5">Re-scan repository after remediation</p>
+            <p className="text-xs text-slate-300 mt-0.5">Re-scan static code; validate runtime security separately.</p>
           </div>
         </div>
 

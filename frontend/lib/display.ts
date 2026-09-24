@@ -167,13 +167,14 @@ export function getStatusLabel(
   algorithm?: string | null,
   currentSecurity?: string | null,
   quantumStatus?: string | null,
-  category?: string | null
+  category?: string | null,
+  keySize?: number | null
 ): { label: 'IMMEDIATE' | 'PLAN' | 'VALIDATE' | 'RETAIN'; color: string; bg: string; border: string } {
   const algo = (algorithm || '').toLowerCase().replace(/[-_\s]+/g, '');
   const cs = (currentSecurity || '').toLowerCase();
   const qs = (quantumStatus || '').toLowerCase();
 
-  if (category === 'security_hygiene' || algo.includes('secret') || cs === 'broken' || ['md5', 'sha1', 'des', '3des', 'rc4'].includes(algo)) {
+  if (category === 'security_hygiene' || algo.includes('secret') || cs === 'broken' || (algo.includes('rsa') && keySize !== null && keySize !== undefined && keySize < 2048) || ['md5', 'sha1', 'des', '3des', 'rc4'].includes(algo)) {
     return {
       label: 'IMMEDIATE',
       color: 'text-red-400',
@@ -244,4 +245,3 @@ export function getMitigationSummaryLine(
   }
   return 'Apply interim controls while long-term post-quantum migration is prepared.';
 }
-

@@ -4,6 +4,7 @@
 
 # ── Runtime data & databases ──
 .ecdat/
+.ecdat-runtime/
 *.sqlite3
 *.sqlite3-journal
 *.sqlite3-wal

@@ -2,13 +2,60 @@
 
 import React, { useState, useMemo } from 'react';
 import { useScanContext } from '@/components/scan-provider';
-import { 
-  formatAlgorithm, formatSeverity, formatCurrentSecurity, formatQuantumRisk, formatOperation, 
-  severityBg, currentSecurityColor, quantumRiskColor, moscaColor, moscaBg 
+import {
+  formatAlgorithm, formatSeverity, formatCurrentSecurity, formatQuantumRisk, formatOperation
 } from '@/lib/display';
-import { AlertTriangle, Shield, Zap, FileCode, ChevronDown, ChevronUp, Info, Search } from 'lucide-react';
-import type { FindingResponse } from '@/types/api';
+import { AlertTriangle, FileCode, ChevronDown, ChevronUp, Search, SlidersHorizontal } from 'lucide-react';
 import InteractiveMitigation from '@/components/interactive-mitigation';
+
+const FilterPills = ({ label, options, selected, onChange }: { label: string, options: string[], selected: string, onChange: (v: string) => void }) => (
+  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+    <span className="text-[#8A9094] text-xs font-semibold uppercase tracking-wider whitespace-nowrap min-w-[110px]">{label}:</span>
+    <div className="flex flex-wrap gap-1.5">
+      {options.map(opt => {
+        const isSelected = selected === opt;
+        return (
+          <button
+            key={opt}
+            onClick={() => onChange(opt)}
+            className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors border ${
+              isSelected
+                ? 'bg-[#1F2327] text-[#F4F1E8] border-[#C8A96B] font-semibold shadow-sm'
+                : 'bg-[#171A1D] text-[#8A9094] border-[#34393D] hover:border-[#4A4F54] hover:text-[#B8BDBD]'
+            }`}
+          >
+            {opt}
+          </button>
+        );
+      })}
+    </div>
+  </div>
+);
+
+function getSeverityBadgeStyle(severity?: string) {
+  const s = (severity || '').toLowerCase();
+  if (s === 'critical') return 'bg-[#D66A6A]/15 text-[#D66A6A] border border-[#D66A6A]/35';
+  if (s === 'high') return 'bg-[#D4A24C]/15 text-[#D4A24C] border border-[#D4A24C]/35';
+  if (s === 'medium') return 'bg-[#D4A24C]/10 text-[#D4A24C] border border-[#D4A24C]/25';
+  if (s === 'low') return 'bg-[#77AFA9]/15 text-[#77AFA9] border border-[#77AFA9]/35';
+  return 'bg-[#3A3D3E]/40 text-[#8B9095] border border-[#3A3D3E]';
+}
+
+function getSecurityBadgeStyle(status?: string | null) {
+  const s = (status || '').toLowerCase();
+  if (s === 'broken') return 'bg-[#D66A6A]/15 text-[#D66A6A] border border-[#D66A6A]/35';
+  if (s === 'deprecated') return 'bg-[#D4A24C]/15 text-[#D4A24C] border border-[#D4A24C]/35';
+  if (s === 'acceptable' || s === 'strong') return 'bg-[#64C59B]/15 text-[#64C59B] border border-[#64C59B]/35';
+  return 'bg-[#3A3D3E]/30 text-[#8B9095] border border-[#3A3D3E]';
+}
+
+function getQuantumBadgeStyle(status?: string | null) {
+  const s = (status || '').toLowerCase();
+  if (s === 'vulnerable') return 'bg-[#D66A6A]/15 text-[#D66A6A] border border-[#D66A6A]/35';
+  if (s === 'migration_concern') return 'bg-[#D4A24C]/15 text-[#D4A24C] border border-[#D4A24C]/35';
+  if (s === 'low_concern') return 'bg-[#64C59B]/15 text-[#64C59B] border border-[#64C59B]/35';
+  return 'bg-[#3A3D3E]/30 text-[#8B9095] border border-[#3A3D3E]';
+}
 
 export default function FindingsPage() {
   const { findings, summary } = useScanContext();
@@ -20,6 +67,7 @@ export default function FindingsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [showMoreFilters, setShowMoreFilters] = useState(false);
 
   const filteredFindings = useMemo(() => {
     return findings.filter(finding => {
@@ -56,89 +104,99 @@ export default function FindingsPage() {
     });
   }, [findings, severityFilter, securityFilter, quantumFilter, categoryFilter, searchQuery]);
 
-  const FilterPills = ({ label, options, selected, onChange }: { label: string, options: string[], selected: string, onChange: (v: string) => void }) => (
-    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-      <span className="text-slate-400 text-xs font-semibold uppercase tracking-wider whitespace-nowrap min-w-[120px]">{label}:</span>
-      <div className="flex flex-wrap gap-1.5">
-        {options.map(opt => (
-          <button
-            key={opt}
-            onClick={() => onChange(opt)}
-            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors border ${
-              selected === opt 
-                ? 'bg-blue-600 text-white border-blue-500 shadow-sm' 
-                : 'bg-[#152033] text-slate-300 border-[#1e2d42] hover:bg-[#1e2d42]'
-            }`}
-          >
-            {opt}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-
   return (
     <div className="max-w-7xl mx-auto space-y-6 p-6">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-3 pb-2 border-b border-[#1e2d42]">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-3 pb-3 border-b border-[#34393D]">
         <div>
-          <h1 className="text-2xl font-bold text-slate-100 flex items-center gap-2.5">
-            <AlertTriangle className="w-6 h-6 text-amber-400 shrink-0" />
+          <h1 className="text-2xl font-bold text-[#F4F1E8] flex items-center gap-2.5">
+            <AlertTriangle className="w-6 h-6 text-[#C7A15D] shrink-0" />
             Cryptographic Findings
           </h1>
-          <p className="text-slate-400 text-sm mt-1">
+          <p className="text-[#8A9094] text-xs sm:text-sm mt-1">
             Every discovery is traceable to exact source files, call sites, static analysis rules, and security policies.
           </p>
         </div>
-        <div className="text-xs text-slate-400 bg-[#0e1726] px-3.5 py-2 rounded-lg border border-[#1e2d42] shrink-0">
-          Showing <span className="font-bold text-slate-200">{filteredFindings.length}</span> of{' '}
-          <span className="font-bold text-slate-200">{summary?.total_findings ?? findings.length}</span> findings
+        <div className="text-xs text-[#8A9094] bg-[#171A1D] px-3.5 py-1.5 rounded-lg border border-[#34393D] shrink-0">
+          Showing <span className="font-bold text-[#F4F1E8]">{filteredFindings.length}</span> of{' '}
+          <span className="font-bold text-[#F4F1E8]">{summary?.total_findings ?? findings.length}</span> findings
         </div>
       </div>
 
-      {/* Filters Card */}
-      <div className="bg-[#0e1726] border border-[#1e2d42] rounded-xl p-5 space-y-4">
-        <div className="relative max-w-md">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Search by algorithm, filename, or reason..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-[#070b14] border border-[#1e2d42] rounded-lg pl-10 pr-4 py-2 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
-          />
+      {/* Analytical Filters Toolbar */}
+      <div className="bg-[#171A1D] border border-[#34393D] rounded-xl p-5 space-y-4 shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-center gap-4 justify-between">
+          <div className="relative w-full max-w-md">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A9094]" />
+            <input
+              type="text"
+              placeholder="Search by algorithm, filename, or reason..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-[#0F1113] border border-[#34393D] rounded-lg pl-10 pr-4 py-2 text-xs text-[#F4F1E8] placeholder:text-[#8A9094] focus:outline-none focus:border-[#C8A96B] transition-colors"
+            />
+          </div>
+          <button
+            onClick={() => setShowMoreFilters(!showMoreFilters)}
+            className="inline-flex items-center gap-1.5 text-xs text-[#C8A96B] hover:text-[#D4B679] font-medium transition-colors self-start md:self-auto"
+          >
+            <SlidersHorizontal className="w-3.5 h-3.5" />
+            {showMoreFilters ? 'Fewer Filters' : 'More Filters'}
+          </button>
         </div>
         
+        {/* Main Filters */}
         <FilterPills 
           label="Severity" 
           options={['All', 'Critical', 'High', 'Medium', 'Low', 'Informational']} 
           selected={severityFilter} 
           onChange={setSeverityFilter} 
         />
-        <FilterPills 
-          label="Current Security" 
-          options={['All', 'Broken', 'Deprecated', 'Acceptable', 'Strong']} 
-          selected={securityFilter} 
-          onChange={setSecurityFilter} 
+        <FilterPills
+          label="Quantum Risk"
+          options={['All', 'Vulnerable', 'Migration Concern', 'Low Concern', 'Not Applicable']}
+          selected={quantumFilter}
+          onChange={setQuantumFilter}
         />
-        <FilterPills 
-          label="Quantum Risk" 
-          options={['All', 'Vulnerable', 'Migration Concern', 'Low Concern', 'Not Applicable']} 
-          selected={quantumFilter} 
-          onChange={setQuantumFilter} 
-        />
-        <FilterPills 
-          label="Category" 
-          options={['All', 'Cryptographic', 'Security Hygiene']} 
-          selected={categoryFilter} 
-          onChange={setCategoryFilter} 
-        />
+
+        {/* Secondary Expandable Filters */}
+        {showMoreFilters && (
+          <div className="pt-3 border-t border-[#34393D] space-y-3">
+            <FilterPills
+              label="Current Security"
+              options={['All', 'Broken', 'Deprecated', 'Acceptable', 'Strong']}
+              selected={securityFilter}
+              onChange={setSecurityFilter}
+            />
+            <FilterPills
+              label="Category"
+              options={['All', 'Cryptographic', 'Security Hygiene']}
+              selected={categoryFilter}
+              onChange={setCategoryFilter}
+            />
+          </div>
+        )}
       </div>
 
-      {/* Findings List */}
+        {/* Findings List */}
       <div className="space-y-3">
+        {/* Desktop Header Row */}
+        {filteredFindings.length > 0 && (
+          <div className="hidden md:flex items-center gap-4 px-5 pb-2 border-b border-[#34393D] text-[11px] font-semibold text-[#8A9094] uppercase tracking-wider select-none">
+            <div className="w-32 shrink-0">Severity</div>
+            <div className="flex-1 grid grid-cols-12 gap-3 min-w-0">
+              <div className="col-span-3">Algorithm / Asset</div>
+              <div className="col-span-3">Source Location</div>
+              <div className="col-span-2">Current Security</div>
+              <div className="col-span-2">Quantum Risk</div>
+              <div className="col-span-2">Operation</div>
+            </div>
+            <div className="w-6 shrink-0"></div>
+          </div>
+        )}
+
         {filteredFindings.length === 0 ? (
-          <div className="bg-[#0e1726] border border-[#1e2d42] rounded-xl p-12 text-center text-slate-400">
+          <div className="bg-[#171A1D] border border-[#34393D] rounded-xl p-12 text-center text-[#8A9094] text-sm">
             No findings match the selected filters.
           </div>
         ) : (
@@ -149,216 +207,125 @@ export default function FindingsPage() {
             const filePath = finding.file || finding.file_path || '';
             const fileName = filePath.split(/[/\\]/).pop() || filePath;
             const lineNum = finding.line || finding.line_number || 1;
-            const mosca = finding.mosca;
-            const mitigation = finding.migration_recommendation?.mitigation;
             const isSecurityHygiene = finding.category === 'security_hygiene';
 
             return (
-              <div key={finding.id} className="bg-[#0e1726] border border-[#1e2d42] rounded-xl overflow-hidden transition-all duration-200">
-                {/* Row Header */}
+              <div key={finding.id} className="bg-[#171A1D] border border-[#34393D] rounded-xl overflow-hidden hover:border-[#4A4F54] transition-colors">
+                {/* Desktop and Mobile Row Header */}
                 <div 
-                  className="flex items-center gap-4 p-4 cursor-pointer hover:bg-[#152033]/60 transition-colors select-none"
+                  className="flex flex-col md:flex-row md:items-center gap-3 md:gap-4 p-4 cursor-pointer hover:bg-[#1F2327]/60 transition-colors select-none"
                   onClick={() => setExpandedId(isExpanded ? null : finding.id)}
                 >
-                  <div className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase shrink-0 ${severityBg(finding.severity)}`}>
-                    {formatSeverity(finding.severity)}
+                  {/* Severity Badge */}
+                  <div className="flex justify-between items-center md:block md:w-32 shrink-0">
+                    <div className={`px-2.5 py-1 rounded-md text-[10.5px] font-bold uppercase tracking-wider text-center whitespace-nowrap inline-block md:block ${getSeverityBadgeStyle(finding.severity)}`}>
+                      {formatSeverity(finding.severity)}
+                    </div>
+                    <div className="md:hidden text-[#8A9094]">
+                      {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                    </div>
                   </div>
                   
-                  <div className="flex-1 grid grid-cols-12 gap-3 items-center min-w-0">
-                    <div className="col-span-3 font-semibold text-slate-100 truncate">
-                      {isSecurityHygiene ? (
-                        <span className="text-amber-400 font-medium">Security Hygiene Finding</span>
-                      ) : (
-                        formatAlgorithm(finding.algorithm || '')
-                      )}
-                      {finding.key_size && (
-                        <span className="ml-2 text-xs font-normal text-slate-400 font-mono">
-                          ({finding.key_size}-bit)
-                        </span>
-                      )}
+                  {/* Columns */}
+                  <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-3 items-start md:items-center min-w-0 text-xs">
+                    {/* Algorithm / Asset */}
+                    <div className="md:col-span-3 font-semibold text-[#F4F1E8] truncate flex items-center gap-2">
+                      <span className="md:hidden text-[#8A9094] font-normal w-24 shrink-0">Asset:</span>
+                      <span className="truncate">
+                        {isSecurityHygiene ? 'Hardcoded Secret' : formatAlgorithm(finding.algorithm || '')}
+                        {finding.key_size && ` (${finding.key_size}-bit)`}
+                      </span>
                     </div>
                     
-                    <div className="col-span-3 flex items-center gap-1.5 text-xs text-slate-400 font-mono truncate" title={filePath}>
-                      <FileCode className="w-3.5 h-3.5 shrink-0 text-slate-500" />
+                    {/* Source Location */}
+                    <div className="md:col-span-3 flex items-center gap-1.5 text-[#8A9094] font-mono truncate" title={filePath}>
+                      <span className="md:hidden font-normal font-sans text-[#8A9094] w-24 shrink-0">Location:</span>
+                      <FileCode className="w-3.5 h-3.5 shrink-0 hidden md:block text-[#6E84A3]" />
                       <span className="truncate">{fileName}:{lineNum}</span>
                     </div>
                     
-                    <div className={`col-span-2 text-xs font-semibold ${currentSecurityColor(currentSec)} truncate`}>
-                      {formatCurrentSecurity(currentSec)}
+                    {/* Current Security */}
+                    <div className="md:col-span-2 truncate flex items-center gap-2">
+                      <span className="md:hidden text-[#8B9095] font-normal w-24 shrink-0">Current Sec:</span>
+                      <span className={`inline-flex px-2 py-0.5 rounded text-[11px] font-semibold ${getSecurityBadgeStyle(currentSec)}`}>
+                        {formatCurrentSecurity(currentSec)}
+                      </span>
                     </div>
                     
-                    <div className={`col-span-2 text-xs font-semibold ${quantumRiskColor(quantumRisk)} truncate`}>
-                      {formatQuantumRisk(quantumRisk)}
+                    {/* Quantum Risk */}
+                    <div className="md:col-span-2 truncate flex items-center gap-2">
+                      <span className="md:hidden text-[#8B9095] font-normal w-24 shrink-0">Quantum:</span>
+                      <span className={`inline-flex px-2 py-0.5 rounded text-[11px] font-semibold ${getQuantumBadgeStyle(quantumRisk)}`}>
+                        {formatQuantumRisk(quantumRisk)}
+                      </span>
                     </div>
                     
-                    <div className="col-span-2 text-xs text-slate-400 capitalize truncate">
-                      {formatOperation(finding.operation || finding.operation_type || '')}
+                    {/* Operation */}
+                    <div className="md:col-span-2 text-[#8A9094] capitalize truncate flex items-center gap-2">
+                      <span className="md:hidden text-[#8A9094] font-normal w-24 shrink-0">Operation:</span>
+                      <span className="truncate">{formatOperation(finding.operation || finding.operation_type || '')}</span>
                     </div>
                   </div>
                   
-                  <div className="shrink-0 text-slate-400">
-                    {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                  {/* Expand Chevron Desktop */}
+                  <div className="shrink-0 text-[#8A9094] hidden md:block">
+                    {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                   </div>
                 </div>
                 
                 {/* Expanded Detail Panel */}
                 {isExpanded && (
-                  <div className="p-6 border-t border-[#1e2d42] bg-[#070b14]/80 space-y-6">
-                    {/* 1. Algorithm + Severity */}
-                    <div className="flex items-center justify-between gap-4 flex-wrap pb-3 border-b border-[#1e2d42]">
+                  <div className="p-4 md:p-6 border-t border-[#34393D] bg-[#0F1113]/90 space-y-6">
+                    {/* 1. Header Information */}
+                    <div className="flex items-center justify-between gap-4 flex-wrap pb-3 border-b border-[#34393D]">
                       <div className="flex items-center gap-3">
-                        <h2 className="text-xl font-bold text-slate-100">
+                        <h2 className="text-lg font-bold text-[#F4F1E8]">
                           {isSecurityHygiene ? 'Hardcoded Secret / Credential' : formatAlgorithm(finding.algorithm || '')}
                         </h2>
                         {finding.key_size && (
-                          <span className="text-xs font-mono px-2.5 py-0.5 rounded bg-[#152033] text-slate-300 border border-[#1e2d42]">
+                          <span className="text-xs font-mono px-2 py-0.5 rounded bg-[#1F2327] text-[#E2DFD8] border border-[#34393D]">
                             Key size: {finding.key_size} bits
                           </span>
                         )}
-                        <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${severityBg(finding.severity)}`}>
+                        <span className={`px-2 py-0.5 rounded text-[11px] font-bold ${getSeverityBadgeStyle(finding.severity)}`}>
                           {finding.severity?.toUpperCase()} SEVERITY
                         </span>
                       </div>
-                      <div className="text-xs text-slate-400 font-mono">
+                      <div className="text-xs text-[#8A9094] font-mono">
                         Rule: {finding.scanner_rule_id || '-'}
                       </div>
                     </div>
 
-                    {/* 2. File + Line */}
+                    {/* 2. File Location & Snippet */}
                     <div className="space-y-1.5">
-                      <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                        <FileCode className="w-4 h-4 text-blue-400" />
-                        Source Evidence: <span className="text-slate-200 font-mono lowercase">{filePath}:{lineNum}</span>
+                      <div className="text-xs font-semibold text-[#8A9094] uppercase tracking-wider flex items-center gap-2">
+                        <FileCode className="w-3.5 h-3.5 text-[#78AAA4]" />
+                        <span>File Location:</span>
+                        <span className="font-mono text-[#F4F1E8] lowercase normal-case">{filePath}:{lineNum}</span>
                       </div>
-                      {/* 3. Detected Code */}
                       {finding.code_snippet && (
-                        <pre className="bg-[#070b14] border border-[#1e2d42] p-4 rounded-lg overflow-x-auto text-xs text-slate-200 font-mono leading-relaxed">
-                          <code>{finding.code_snippet}</code>
-                        </pre>
+                        <div className="bg-[#171A1D] border border-[#34393D] rounded-lg p-3 font-mono text-xs text-[#E2DFD8] overflow-x-auto whitespace-pre">
+                          {finding.code_snippet}
+                        </div>
                       )}
                     </div>
 
-                    {/* 4. Current Security & 5. Quantum Migration Status (Distinct Cards) */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {/* Left: Current Security */}
-                      <div className="bg-[#0e1726] border border-[#1e2d42] rounded-xl p-4 space-y-2">
-                        <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                          <Shield className="w-4 h-4 text-blue-400" />
-                          Current Security Status (Today)
-                        </div>
-                        <div className={`text-lg font-bold ${currentSecurityColor(currentSec)} flex items-center gap-2`}>
-                          {formatCurrentSecurity(currentSec)}
-                        </div>
-                        <p className="text-xs text-slate-400">
-                          Evaluates resilience against modern classical computing attacks and known vulnerabilities.
-                        </p>
-                      </div>
-
-                      {/* Right: Quantum Migration Status */}
-                      <div className="bg-[#0e1726] border border-[#1e2d42] rounded-xl p-4 space-y-2">
-                        <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                          <Zap className="w-4 h-4 text-amber-400" />
-                          Quantum Migration Status (Future)
-                        </div>
-                        <div className={`text-lg font-bold ${quantumRiskColor(quantumRisk)} flex items-center gap-2`}>
-                          {formatQuantumRisk(quantumRisk)}
-                        </div>
-                        <p className="text-xs text-slate-400">
-                          Evaluates vulnerability to Shor&apos;s or Grover&apos;s algorithms on future cryptographically relevant quantum computers.
-                        </p>
-                      </div>
+                    {/* 3. Interactive Mitigation & Migration Roadmap */}
+                    <div className="pt-2">
+                      <InteractiveMitigation
+                        findingId={finding.id}
+                        algorithm={finding.algorithm}
+                        currentSecurity={currentSec}
+                        quantumStatus={quantumRisk}
+                        category={finding.category}
+                        keySize={finding.key_size}
+                        operation={finding.operation || finding.operation_type}
+                        mitigation={finding.migration_recommendation?.mitigation}
+                        recommendation={finding.migration_recommendation?.suggested_direction || finding.risk_assessment?.recommendation}
+                        notes={finding.migration_recommendation?.migration_notes}
+                        reason={finding.reason}
+                      />
                     </div>
-
-                    {/* 6. Why It Was Detected & 7. Why It Matters */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="bg-[#0e1726] border border-[#1e2d42] rounded-xl p-4 space-y-2">
-                        <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                          <Info className="w-4 h-4 text-blue-400" />
-                          Why It Was Detected
-                        </h3>
-                        <p className="text-xs text-slate-300 leading-relaxed">
-                          {finding.reason || 'Pattern matched cryptographic signature in static analysis.'}
-                        </p>
-                      </div>
-
-                      <div className="bg-[#0e1726] border border-[#1e2d42] rounded-xl p-4 space-y-2">
-                        <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                          <AlertTriangle className="w-4 h-4 text-amber-400" />
-                          Why It Matters
-                        </h3>
-                        <p className="text-xs text-slate-300 leading-relaxed">
-                          {finding.risk_assessment?.explanation || finding.reason || 'Security implications depend on operational context and threat model.'}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* 8. Policy / Rule ID */}
-                    <div className="bg-[#0e1726] border border-[#1e2d42] rounded-xl p-4 space-y-2 text-xs">
-                      <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                        Traceable Policy Guidance
-                      </div>
-                      <div className="flex flex-wrap items-center gap-3">
-                        <span className="bg-[#152033] px-3 py-1 rounded text-slate-300 border border-[#1e2d42]">
-                          Policy: {finding.policy_source || 'ECDAT policy based on NIST SP 800-131A and CNSA 2.0'}
-                        </span>
-                        <span className="bg-[#152033] px-3 py-1 rounded text-blue-400 font-mono border border-[#1e2d42]">
-                          Rule: {finding.policy_rule_id || finding.scanner_rule_id || 'RULE-001'}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* 9. Mosca / Migration Priority */}
-                    {mosca && (
-                      <div className="bg-[#0e1726] border border-[#1e2d42] rounded-xl p-4 space-y-3">
-                        <div className="flex justify-between items-center flex-wrap gap-2">
-                          <div className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
-                            Mosca Prioritization Analysis
-                          </div>
-                          <div className={`px-3 py-1 rounded-full text-xs font-bold ${moscaBg(mosca.urgency_label)} ${moscaColor(mosca.urgency_label)}`}>
-                            Urgency: {mosca.urgency_label} ({mosca.migration_urgency > 0 ? `+${mosca.migration_urgency.toFixed(1)}` : mosca.migration_urgency.toFixed(1)}y)
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                          <div className="bg-[#070b14] p-2.5 rounded-lg border border-[#1e2d42]">
-                            <span className="text-slate-400 block">Data Lifetime (X)</span>
-                            <span className="text-slate-200 font-bold">{mosca.data_lifetime_years} years</span>
-                          </div>
-                          <div className="bg-[#070b14] p-2.5 rounded-lg border border-[#1e2d42]">
-                            <span className="text-slate-400 block">Migration Time (Y)</span>
-                            <span className="text-slate-200 font-bold">{mosca.migration_time_years} years</span>
-                          </div>
-                          <div className="bg-[#070b14] p-2.5 rounded-lg border border-[#1e2d42]">
-                            <span className="text-slate-400 block">Threat Horizon (Z)</span>
-                            <span className="text-slate-200 font-bold">{mosca.threat_horizon_years} years</span>
-                          </div>
-                          <div className="bg-[#070b14] p-2.5 rounded-lg border border-[#1e2d42]">
-                            <span className="text-slate-400 block">Business Criticality</span>
-                            <span className="text-slate-200 font-bold capitalize">{mosca.business_criticality || 'Medium'}</span>
-                          </div>
-                        </div>
-                        {mosca.is_demo_assumption && (
-                          <p className="text-[11px] text-slate-400 italic">
-                            * Note: Lifetime and threat horizon values are configured demo assumptions for planning illustration.
-                          </p>
-                        )}
-                      </div>
-                    )}
-
-                    {/* ── RISK → MITIGATE → MIGRATE → VERIFY hierarchy ── */}
-                    <InteractiveMitigation
-                      findingId={finding.id}
-                      algorithm={finding.algorithm}
-                      currentSecurity={finding.current_security || finding.risk_assessment?.current_security_status}
-                      quantumStatus={finding.quantum_status || finding.risk_assessment?.quantum_risk_status}
-                      category={finding.category}
-                      keySize={finding.key_size}
-                      operation={finding.operation || finding.operation_type}
-                      mitigation={mitigation}
-                      recommendation={finding.migration_recommendation?.suggested_direction || finding.risk_assessment?.recommendation}
-                      notes={finding.migration_recommendation?.migration_notes}
-                      reason={finding.reason}
-                    />
                   </div>
                 )}
               </div>

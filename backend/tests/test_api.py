@@ -2,6 +2,7 @@ import csv
 import io
 import json
 from pathlib import Path
+import shutil
 import stat
 import threading
 import time
@@ -11,12 +12,35 @@ import zipfile
 import pytest
 from fastapi.testclient import TestClient
 from app.main import create_app
-from app.api.config import Settings
+from app.api.config import PROJECT_ROOT, Settings
 from app.api.database import Database, Scan
+from app.api.intake import cleanup, new_workspace
 from app.api.service import now
 from app.scanner.engine import ScannerEngine
 
 DEMO = Path(__file__).resolve().parents[2] / "demo_repository"
+
+def test_default_runtime_data_dir_uses_local_application_storage(monkeypatch):
+    monkeypatch.delenv("ECDAT_DATA_DIR", raising=False)
+    assert Settings().data_dir == PROJECT_ROOT / ".ecdat-runtime"
+
+    monkeypatch.setenv("ECDAT_DATA_DIR", "C:/custom/ecdat-data")
+    assert Settings().data_dir == Path("C:/custom/ecdat-data")
+
+
+def test_new_workspace_accepts_snapshot_subdirectories():
+    data_dir = PROJECT_ROOT / f".test-workspace-{uuid.uuid4().hex}"
+    settings = Settings(data_dir=data_dir)
+    try:
+        workspace = new_workspace(settings)
+        nested_source_directory = workspace / "java_app"
+        nested_source_directory.mkdir()
+
+        assert workspace.parent == settings.data_dir.resolve() / "jobs"
+        assert workspace.name.startswith("scan-")
+        cleanup(workspace, settings)
+    finally:
+        shutil.rmtree(data_dir, ignore_errors=True)
 
 
 @pytest.fixture

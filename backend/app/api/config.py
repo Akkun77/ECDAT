@@ -6,9 +6,16 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
+def default_data_dir() -> Path:
+    """Keep mutable scan state out of the legacy runtime directory when it is unavailable."""
+    configured = os.environ.get("ECDAT_DATA_DIR")
+    if configured:
+        return Path(configured)
+    return PROJECT_ROOT / ".ecdat-runtime"
+
 @dataclass
 class Settings:
-    data_dir: Path = field(default_factory=lambda: Path(os.environ.get("ECDAT_DATA_DIR", PROJECT_ROOT / ".ecdat")))
+    data_dir: Path = field(default_factory=default_data_dir)
     allowed_roots: list[Path] = field(default_factory=lambda: [
         Path(p) for p in json.loads(os.environ.get("ECDAT_ALLOWED_ROOTS", json.dumps([str(PROJECT_ROOT / "demo_repository")])))
     ])

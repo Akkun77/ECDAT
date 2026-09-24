@@ -4,7 +4,7 @@ import os
 import re
 import shutil
 import stat
-import tempfile
+import uuid
 import zipfile
 
 from app.scanner.engine import ScannerEngine
@@ -18,7 +18,12 @@ class IntakeError(ValueError):
 def new_workspace(settings):
     root = settings.data_dir.resolve() / "jobs"
     root.mkdir(parents=True, exist_ok=True)
-    return Path(tempfile.mkdtemp(prefix="scan-", dir=root))
+    # tempfile.mkdtemp creates a Windows directory ACL that can prevent the
+    # snapshotter from creating its nested source directories.  Create the
+    # unique job directory using the parent runtime ACL instead.
+    workspace = root / f"scan-{uuid.uuid4().hex}"
+    workspace.mkdir()
+    return workspace
 
 def cleanup(path, settings):
     root = (settings.data_dir.resolve() / "jobs")
